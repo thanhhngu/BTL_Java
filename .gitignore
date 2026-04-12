@@ -1,0 +1,6 @@
+.idea/
+lib/
+src/test/
+src/main/resources/
+target/
+pom.xml
