@@ -79,6 +79,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         content.repaint();
     }
 
+
     private String username;
 
     // Header

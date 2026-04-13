@@ -6,8 +6,7 @@ import java.sql.SQLException;
 
 public class DBconnection {
 
-
-    private static String url = "jdbc:mysql://localhost:3306/qldonhang?useSSL=false&serverTimezone=UTC";
+    private static String url = "jdbc:mysql://localhost:3306/qldonhang?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static String user = "root";
     private static String password = "123456";
 
