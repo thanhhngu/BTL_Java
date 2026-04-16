@@ -1,11 +1,22 @@
 package model_layer;
 
+import java.util.List;
+
 public class order_detail {
     private int orderID;
     private int productID;
     private double unitPrice;
     private int quantity;
     private double discount;
+    private products product;
+
+    public products getProduct() {
+        return product;
+    }
+
+    public void setProduct(products product) {
+        this.product = product;
+    }
 
     public order_detail() {
     }

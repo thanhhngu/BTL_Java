@@ -1,5 +1,7 @@
 package presentation_layer.mdl;
 
+import presentation_layer.itf.SidebarCallback;
+
 import javax.swing.*;
 import java.awt.*;
 

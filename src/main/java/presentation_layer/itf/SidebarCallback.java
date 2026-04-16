@@ -1,4 +1,4 @@
-package presentation_layer.mdl;
+package presentation_layer.itf;
 
 public interface SidebarCallback {
     void onMenuClick(String command);

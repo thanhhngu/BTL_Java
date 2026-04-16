@@ -11,14 +11,14 @@ import java.util.List;
 
 import static presentation_layer.mdl.HandleAction.*;
 
-public class ConfirmPanel extends JPanel {
+public class StatusPanel extends JPanel {
 
     public String id;
 
     DefaultTableModel model;
     JTable table;
 
-    public ConfirmPanel(String id) {
+    public StatusPanel(String id) {
         this.id = id;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -40,9 +40,9 @@ public class ConfirmPanel extends JPanel {
 
     public void initTable(JPanel tablePanel) {
         OrderReponsitory orderRepo = new OrderReponsitory();
-        List<order> orderList = orderRepo.getOrdersWithProducts("PENDING", id);
+        List<order> orderList = orderRepo.getOrdersWithProducts("DELIVERED", id);
 
-        String[] columnNames = {"orderID", "customerID", "shipperID", "orderDate"};
+        String[] columnNames = {"orderID", "customerID", "shipperID", "orderDate", "shippedDate"};
 
         Object[][] data = new Object[orderList.size()][5];
 
@@ -52,6 +52,7 @@ public class ConfirmPanel extends JPanel {
             data[i][1] = o.getCustomerID();
             data[i][2] = o.getShipperID();
             data[i][3] = o.getOrderDate();
+            data[i][4] = o.getShippedDate();
         }
 
         model = new DefaultTableModel(data, columnNames);
@@ -64,21 +65,23 @@ public class ConfirmPanel extends JPanel {
                 orderList,
                 o -> o.getOrderID(),
                 o -> showOrderDetail(o, model, this.id, this)
-                );
+        );
     }
 
     public void initControl(JPanel sidePanel) {
-        JButton btnCAll = new JButton("Confirm All");
+        JButton btnDelivered = new JButton("Show Delivered");
+        JButton btnShipping = new JButton("Show Shipping");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
-
-        controlPanel.add(btnCAll);
+        controlPanel.add(btnDelivered);
+        controlPanel.add(btnShipping);
 
         sidePanel.add(controlPanel, BorderLayout.NORTH);
 
-        btnCAll.addActionListener(e -> handleConfirmAll(table, model, this.id, this));
+        btnDelivered.addActionListener(e -> showDelivered(table, model, this.id, "DELIVERED", this));
+        btnShipping.addActionListener(e -> showShipping(table, model, this.id, "SHIPPING", this));
+
+
     }
-
-
 
 }

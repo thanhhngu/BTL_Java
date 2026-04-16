@@ -1,12 +1,9 @@
 package presentation_layer.Shop;
 
-import presentation_layer.Shop.MenuPanel.ConfirmPanel;
-import presentation_layer.Shop.MenuPanel.DeliveredPanel;
-import presentation_layer.Shop.MenuPanel.HomePanel;
-import presentation_layer.Shop.MenuPanel.RevenuePanel;
+import presentation_layer.Shop.MenuPanel.*;
 import presentation_layer.mdl.AccountPanel;
 import presentation_layer.mdl.SideBarr;
-import presentation_layer.mdl.SidebarCallback;
+import presentation_layer.itf.SidebarCallback;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +17,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
 
     private HomePanel homePanel;
     private ConfirmPanel confirmPanel;
-    private DeliveredPanel deliveredPanel;
+    private StatusPanel statusPanel;
     private RevenuePanel revenuePanel;
     private AccountPanel accountPanel = new AccountPanel();
 
@@ -32,7 +29,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Sidebar
-        sb = new SideBarr(new String[]{"Home", "Confirm", "Delivered", "Revenue", "Account"}, this);
+        sb = new SideBarr(new String[]{"Home", "Confirm", "Status", "Revenue", "Account"}, this);
         mainPanel.add(sb, BorderLayout.WEST);
 
         // Header
@@ -42,7 +39,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         // Content
         homePanel = new HomePanel(id);
         confirmPanel = new ConfirmPanel(id);
-        deliveredPanel = new DeliveredPanel(id);
+        statusPanel = new StatusPanel(id);
         revenuePanel = new RevenuePanel(id);
 
         content.add(homePanel, BorderLayout.CENTER);
@@ -64,8 +61,8 @@ public class shopFrame extends JFrame implements SidebarCallback {
             case "Confirm":
                 content.add(confirmPanel, BorderLayout.CENTER);
                 break;
-            case "Delivered":
-                content.add(deliveredPanel, BorderLayout.CENTER);
+            case "Status":
+                content.add(statusPanel, BorderLayout.CENTER);
                 break;
             case "Revenue":
                 content.add(revenuePanel, BorderLayout.CENTER);

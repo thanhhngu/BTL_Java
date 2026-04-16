@@ -1,53 +1,69 @@
 package model_layer;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 public class order {
-    private int orderID;
-    private int customerID;
-    private int shipperID;
+    private String orderID;
+    private String customerID;
+    private String shipperID;
     private LocalDate orderDate;
     private LocalDate shippedDate;
     private double freight;
-    private int addressID;
-    private int paymentID;
+    private double amount;
+    private String addressID;
+    private String paymentID;
+    private String status;
+
+    private List<order_detail> items; // 👈 thêm dòng này
+
+    public List<order_detail> getItems() {
+        return items;
+    }
+
+    public void setItems(List<order_detail> items) {
+        this.items = items;
+    }
 
     public order() {
     }
 
-    public order(int orderID, int customerID, int shipperID, LocalDate orderDate,
-                 LocalDate shippedDate, double freight, int addressID, int paymentID) {
+    public order(String orderID, String customerID, String shipperID, LocalDate orderDate,
+                 LocalDate shippedDate, double freight, double amount,String addressID, String paymentID, String status) {
         this.orderID = orderID;
         this.customerID = customerID;
         this.shipperID = shipperID;
         this.orderDate = orderDate;
         this.shippedDate = shippedDate;
+        this.amount = amount;
         this.freight = freight;
         this.addressID = addressID;
         this.paymentID = paymentID;
+        this.status = status;
     }
 
-    public int getOrderID() {
+    public String getOrderID() {
         return orderID;
     }
 
-    public void setOrderID(int orderID) {
+    public void setOrderID(String orderID) {
         this.orderID = orderID;
     }
 
-    public int getCustomerID() {
+    public String getCustomerID() {
         return customerID;
     }
 
-    public void setCustomerID(int customerID) {
+    public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
 
-    public int getShipperID() {
+    public String getShipperID() {
         return shipperID;
     }
 
-    public void setShipperID(int shipperID) {
+    public void setShipperID(String shipperID) {
         this.shipperID = shipperID;
     }
 
@@ -75,33 +91,32 @@ public class order {
         this.freight = freight;
     }
 
-    public int getAddressID() {
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getAddressID() {
         return addressID;
     }
 
-    public void setAddressID(int addressID) {
+    public void setAddressID(String addressID) {
         this.addressID = addressID;
     }
 
-    public int getPaymentID() {
+    public String getPaymentID() {
         return paymentID;
     }
 
-    public void setPaymentID(int paymentID) {
+    public void setPaymentID(String paymentID) {
         this.paymentID = paymentID;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderID=" + orderID +
-                ", customerID=" + customerID +
-                ", shipperID=" + shipperID +
-                ", orderDate=" + orderDate +
-                ", shippedDate=" + shippedDate +
-                ", freight=" + freight +
-                ", addressID=" + addressID +
-                ", paymentID=" + paymentID +
-                '}';
-    }
+    public void setStatus(String status) {this.status = status;}
+
+    public String getStatus() {return status;}
+
 }
