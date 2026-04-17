@@ -13,6 +13,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.function.Function;
 
+import static presentation_layer.mdl.ShowImage.showImg;
+
 public class HandleAction {
 
     public void HandleAction() {
@@ -96,8 +98,8 @@ public class HandleAction {
                                 null,
                                 panel,
                                 "Details",
-                                JOptionPane.DEFAULT_OPTION, // Hoặc JOptionPane.OK_CANCEL_OPTION
-                                JOptionPane.INFORMATION_MESSAGE,
+                                JOptionPane.DEFAULT_OPTION,
+                                JOptionPane.PLAIN_MESSAGE,// Hoặc JOptionPane.OK_CANCEL_OPTION
                                 null,
                                 new Object[]{}, // Mảng rỗng = không có nút
                                 null
@@ -107,6 +109,17 @@ public class HandleAction {
                 }
             }
         });
+    }
+
+    //show for dbclick
+
+    public static JPanel showImageProduct(products p, Component parent) {
+        String imgPath = new ProductRepository().getImagePath(p.getProductID());
+        if (imgPath == null) {
+            JOptionPane.showMessageDialog(parent, "Failed to load image for product: " + p.getName());
+            return null;
+        }
+        return showImg(imgPath);
     }
 
     public static JPanel showOrderDetail(order o, DefaultTableModel model, String shopId, Component parent) {
@@ -119,6 +132,7 @@ public class HandleAction {
         JLabel lblCustomerID = new JLabel();
         JLabel lblShipperID = new JLabel();
         JLabel lblOrderDate = new JLabel();
+        JLabel lblShippedDate = new JLabel();
         JLabel lblFreight = new JLabel();
         JLabel lblAmount = new JLabel();
         JLabel lblStatus = new JLabel();
@@ -131,6 +145,8 @@ public class HandleAction {
         infoPanel.add(lblShipperID);
         infoPanel.add(new JLabel("Order Date:"));
         infoPanel.add(lblOrderDate);
+        infoPanel.add(new JLabel("Shipped Date:"));
+        infoPanel.add(lblShippedDate);
         infoPanel.add(new JLabel("Freight:"));
         infoPanel.add(lblFreight);
         infoPanel.add(new JLabel("Amount:"));
@@ -155,14 +171,16 @@ public class HandleAction {
         });
 
         btnConfirm.addActionListener(e -> {
-            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "SHIPPING");
+            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "CONFIRMED");
             if (success) {
                 JOptionPane.showMessageDialog(parent, "Product deleted successfully!");
                 refreshTable(model, shopId);
             }
         });
 
-        buttonPanel.add(btnConfirm);
+        if(o.getShippedDate()==null || o.getStatus().equals("SHIPPING")) {
+            buttonPanel.add(btnConfirm);
+        }
         buttonPanel.add(btnClose);
 
         detailPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -172,6 +190,11 @@ public class HandleAction {
         lblCustomerID.setText(o.getCustomerID());
         lblShipperID.setText(o.getShipperID());
         lblOrderDate.setText(o.getOrderDate().toString());
+        if (o.getShippedDate() != null) {
+            lblShippedDate.setText(o.getShippedDate().toString());
+        } else {
+            lblShippedDate.setText("Not shipped yet");
+        }
         lblFreight.setText(String.valueOf(o.getFreight()));
         lblAmount.setText(String.valueOf(o.getAmount()));
         lblStatus.setText(o.getStatus());
@@ -296,12 +319,14 @@ public class HandleAction {
         }
 
         String productID = (String) model.getValueAt(row, 0);
-        String name = (String) model.getValueAt(row, 1);
-        double unitPrice = (double) model.getValueAt(row, 2);
-        int unitInStock = (int) model.getValueAt(row, 3);
-        String quantityPerUnit = (String) model.getValueAt(row, 4);
+        String catagID = (String) model.getValueAt(row, 1);
+        String name = (String) model.getValueAt(row, 2);
+        double unitPrice = (double) model.getValueAt(row, 3);
+        int unitInStock = (int) model.getValueAt(row, 4);
+        String quantityPerUnit = (String) model.getValueAt(row, 5);
 
         // Tạo dialog sửa
+        JTextField txtCatgID = new JTextField(catagID);
         JTextField txtName = new JTextField(name);
         JTextField txtUnitPrice = new JTextField(String.valueOf(unitPrice));
         JTextField txtUnitInStock = new JTextField(String.valueOf(unitInStock));
@@ -309,6 +334,8 @@ public class HandleAction {
         cbQuantity.setSelectedItem(quantityPerUnit);
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
+        panel.add(new JLabel("Category ID:"));
+        panel.add(txtCatgID);
         panel.add(new JLabel("Name:"));
         panel.add(txtName);
         panel.add(new JLabel("Unit Price:"));
@@ -358,7 +385,7 @@ public class HandleAction {
             boolean allSuccess = true;
             for (int i = 0; i < rowCount; i++) {
                 String orderID = (String) model.getValueAt(i, 0);
-                boolean success = orderRepo.updateOrderStatus(orderID, "DELIVERED");
+                boolean success = orderRepo.updateOrderStatus(orderID, "CONFIRMED");
                 if (!success) {
                     allSuccess = false;
                     JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + orderID);
@@ -375,7 +402,7 @@ public class HandleAction {
 
     //--------------------- handleAction for StatusPanel------------------
 
-    public static void showDelivered(JTable table, DefaultTableModel model, String shopId, String status, Component parent) {
+    public static void showOrdersStatus(JTable table, DefaultTableModel model, String shopId, String status, Component parent) {
         OrderReponsitory orderRepo = new OrderReponsitory();
         List<order> orderList = orderRepo.getOrdersWithProducts(status, shopId);
 
@@ -401,31 +428,38 @@ public class HandleAction {
 
     }
 
-    public static void showShipping(JTable table, DefaultTableModel model, String shopId, String status, Component parent) {
-        OrderReponsitory orderRepo = new OrderReponsitory();
-        List<order> orderList = orderRepo.getOrdersWithProducts(status, shopId);
 
-        // clear dữ liệu cũ
-        model.setRowCount(0);
+    //----------------------handleAction for RevenuePanel------------------
 
-        for (order o : orderList) {
-            model.addRow(new Object[]{
-                    o.getOrderID(),
-                    o.getCustomerID(),
-                    o.getShipperID(),
-                    o.getOrderDate(),
-                    o.getShippedDate()
-            });
+    public static void showQtySold(String shopID, JPanel mainPanel) {
+        DefaultTableModel model;
+        JTable table;
+
+        String[] columnNames = {"Product ID", "CategoryID", "Name", "Unit In Stock", "Quantity Sold"};
+
+        ProductRepository productRepo = new ProductRepository();
+        List<products> productList = productRepo.getQuantitySold(shopID);
+
+        Object[][] data = new Object[productList.size()][5];
+
+        for (int i = 0; i < productList.size(); i++) {
+            products p = productList.get(i);
+            data[i][0] = p.getProductID();
+            data[i][1] = p.getCatgID();
+            data[i][2] = p.getName();
+            data[i][3] = p.getUnitInStock();
+            data[i][4] = p.getQtySold();
         }
 
-        // cập nhật lại sự kiện double click với danh sách mới
-        handleDClickRowTable(table,
-                orderList,
-                o -> o.getOrderID(),
-                o -> showOrderDetail(o, model, shopId, parent)
-        );
+        mainPanel.removeAll();
+        model = new DefaultTableModel(data, columnNames);
+        table = new JTable(model);
 
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
-
 }
 

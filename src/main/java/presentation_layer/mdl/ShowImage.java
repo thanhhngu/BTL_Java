@@ -4,39 +4,45 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 
-class ShowImage extends JFrame {
+public class ShowImage extends JPanel {
 
-    private JLabel lblImage;
+    private static JLabel lblImage = new JLabel();
 
-    public ShowImage(String imagePath) {
-        super("Show Image");
-        setSize(400, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new FlowLayout());
-
-        lblImage = new JLabel();
-        add(lblImage);
-
-        loadImage(imagePath);
-
-        setVisible(true);
+    public ShowImage() {
     }
 
-    private void loadImage(String imagePath) {
+    public static JPanel showImg(String imagePath) {
+        loadImage(imagePath);
+
+        JPanel pn = new JPanel(new BorderLayout());
+        pn.add(lblImage, BorderLayout.CENTER);
+
+        return pn;
+    }
+
+    private static void loadImage(String imagePath) {
         // load ảnh từ resources (src/main/resources)
         URL url = ShowImage.class.getClassLoader().getResource(imagePath);
 
         if (url != null) {
             ImageIcon icon = new ImageIcon(url);
-            Image img = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-            lblImage.setIcon(new ImageIcon(img));
+
+            // lấy kích thước gốc của ảnh
+            int width = icon.getIconWidth();
+            int height = icon.getIconHeight();
+
+            int maxW = 400, maxH = 400;
+            if (width > maxW || height > maxH) {
+                Image img = icon.getImage().getScaledInstance(maxW, maxH, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(img);
+                width = icon.getIconWidth();
+                height = icon.getIconHeight();
+            }
+
+            lblImage.setIcon(icon);
+            lblImage.setPreferredSize(new Dimension(width, height));
         } else {
             lblImage.setText("Không tìm thấy ảnh: " + imagePath);
         }
-    }
-
-    // test nhanh
-    public static void main(String[] args) {
-        new ShowImage("images/P001.png");
     }
 }

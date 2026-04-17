@@ -75,7 +75,7 @@ public class ProductRepository {
 
     public List<products> findByShopID(String keyword) {
         List<products> list = new ArrayList<>();
-        String sql = "SELECT * FROM Product WHERE discontinued = 0 AND shopID = ?";
+        String sql = "SELECT * FROM Product WHERE discontinued = 0 AND shopID = ? order by productID desc";
 
         try (Connection con = DBconnection.openConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -181,4 +181,51 @@ public class ProductRepository {
         return false;
     }
 
+    public String getImagePath(String productID) {
+
+        String sql = "SELECT imagePath FROM Product WHERE productID=?";
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String imagePath = rs.getString("imagePath");
+                    return imagePath;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<products> getQuantitySold(String shopID) {
+        List<products> list = new ArrayList<>();
+        String sql = "SELECT p.productID, p.catgID, p.name, SUM(od.quantity) AS totalQuantity " +
+                "FROM orders o " +
+                "JOIN order_detail od ON o.orderID = od.orderID " +
+                "JOIN product p ON p.productID = od.productID " +
+                "WHERE p.shopID = ? AND o.status = 'DELIVERED'" +
+                "GROUP BY p.productID, p.catgID, p.name " +
+                "ORDER BY totalQuantity DESC";
+
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, shopID);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()){
+                    products p = new products();
+                    p.setProductID(rs.getString("productID"));
+                    p.setCatgID(rs.getString("catgID"));
+                    p.setName(rs.getString("name"));
+                    p.setQtySold(rs.getInt("totalQuantity"));
+                    list.add(p);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

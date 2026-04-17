@@ -10,6 +10,8 @@ public class products {
     private String quantityPerUnit;
     private boolean discontinued;
     private String imagePath;
+    private int qtySold;
+
 
     public products() {
     }
@@ -98,5 +100,13 @@ public class products {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public int getQtySold() {
+        return qtySold;
+    }
+
+    public void setQtySold(int qtySold) {
+        this.qtySold = qtySold;
     }
 }

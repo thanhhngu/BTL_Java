@@ -44,17 +44,18 @@ public class HomePanel extends JPanel {
         ProductRepository productRepo = new ProductRepository();
         List<products> productList = productRepo.findByShopID(id);
 
-        String[] columnNames = {"Product ID", "Name", "Unit Price", "Unit In Stock", "Quantity Per Unit"};
+        String[] columnNames = {"Product ID", "CatagoryID", "Name", "Unit Price", "Unit In Stock", "Quantity Per Unit"};
 
-        Object[][] data = new Object[productList.size()][5];
+        Object[][] data = new Object[productList.size()][6];
 
         for (int i = 0; i < productList.size(); i++) {
             products p = productList.get(i);
             data[i][0] = p.getProductID();
-            data[i][1] = p.getName();
-            data[i][2] = p.getUnitPrice();
-            data[i][3] = p.getUnitInStock();
-            data[i][4] = p.getQuantityPerUnit();
+            data[i][1] = p.getCatgID();
+            data[i][2] = p.getName();
+            data[i][3] = p.getUnitPrice();
+            data[i][4] = p.getUnitInStock();
+            data[i][5] = p.getQuantityPerUnit();
         }
 
         model = new DefaultTableModel(data, columnNames);
@@ -63,6 +64,12 @@ public class HomePanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
 
         tablePanel.add(scrollPane, BorderLayout.CENTER);
+        
+        handleDClickRowTable(
+                table, productList,
+                p -> p.getProductID(),
+                p -> showImageProduct(p, this)
+                );
     }
 
     public void initControl(JPanel sidePanel) {

@@ -8,6 +8,7 @@ import model_layer.products;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -101,5 +102,72 @@ public class OrderReponsitory {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public double getTotalAmount(String ShopID, LocalDate date){
+        String sql = "SELECT o.*, p.*, od.quantity " +
+                "FROM qldonhang.orders o " +
+                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
+                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "WHERE p.shopID = ? and o.status = ?";
+
+        if (date != null) {
+            sql += " AND Month(o.orderDate) = ? and Year(o.orderDate) = ?";
+        }
+
+        try (Connection con = DBconnection.openConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, ShopID);
+            ps.setString(2, "DELIVERED");
+            if (date != null) {
+                ps.setInt(3, date.getMonthValue());
+                ps.setInt(4, date.getYear());
+            }
+
+            ResultSet rs = ps.executeQuery();
+            double totalAmount = 0;
+
+            while (rs.next()) {
+                double amount = rs.getDouble("amount");
+                if (amount > 0) {
+                    totalAmount += amount;
+                }
+            }
+
+            return totalAmount;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+
+        }
+    }
+
+    public LocalDate getMinOrderDate(String shopID) {
+        String sql = "SELECT MIN(o.orderDate) AS minDate " +
+                "FROM qldonhang.orders o " +
+                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
+                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "WHERE p.shopID = ?";
+
+        try (Connection con = DBconnection.openConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, shopID);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                java.sql.Date minDateSql = rs.getDate("minDate");
+                if (minDateSql != null) {
+                    return minDateSql.toLocalDate();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -190,7 +190,7 @@ public class loginFrame extends JFrame {
                 new customerFrame(acc.getUsername()).setVisible(true);
                 break;
             case "SHOP":
-                new shopFrame(acc.getShopID()).setVisible(true);
+                new shopFrame(acc.getUsername(), acc.getShopID()).setVisible(true);
                 break;
             case "SHIPPER":
                 new shipperFrame(acc.getUsername()).setVisible(true);

@@ -78,8 +78,8 @@ public class StatusPanel extends JPanel {
 
         sidePanel.add(controlPanel, BorderLayout.NORTH);
 
-        btnDelivered.addActionListener(e -> showDelivered(table, model, this.id, "DELIVERED", this));
-        btnShipping.addActionListener(e -> showShipping(table, model, this.id, "SHIPPING", this));
+        btnDelivered.addActionListener(e -> showOrdersStatus(table, model, this.id, "DELIVERED", this));
+        btnShipping.addActionListener(e -> showOrdersStatus(table, model, this.id, "SHIPPING", this));
 
 
     }
