@@ -187,13 +187,13 @@ public class loginFrame extends JFrame {
 
         switch (acc.getRole().toUpperCase()) {
             case "CUSTOMER":
-                new customerFrame(acc.getUsername()).setVisible(true);
+                new customerFrame(acc.getUsername(), acc.getCustomerID()).setVisible(true);
                 break;
             case "SHOP":
                 new shopFrame(acc.getUsername(), acc.getShopID()).setVisible(true);
                 break;
             case "SHIPPER":
-                new shipperFrame(acc.getUsername()).setVisible(true);
+                new shipperFrame(acc.getUsername(), acc.getShopID()).setVisible(true);
                 break;
             default:
                 JOptionPane.showMessageDialog(this, "Role không hợp lệ");

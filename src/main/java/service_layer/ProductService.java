@@ -6,18 +6,24 @@ import repository_layer.ProductRepository;
 import java.util.List;
 
 public class ProductService {
-    private ProductRepository productRepository;
 
-    public ProductService() {
-        productRepository = new ProductRepository();
-    }
+    private final ProductRepository productRepository = new ProductRepository();
 
-    public List<products> getAllProducts() {
-        return productRepository.findAll();
+    public List<products> getAllAvailableProducts() {
+        return productRepository.getAllAvailableProducts();
     }
 
     public List<products> searchProductsByName(String keyword) {
-        return productRepository.findByName(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllAvailableProducts();
+        }
+        return productRepository.searchProductsByName(keyword.trim());
     }
 
+    public List<products> getProductsByCategory(String catgID) {
+        if (catgID == null || catgID.trim().isEmpty() || "ALL".equalsIgnoreCase(catgID)) {
+            return getAllAvailableProducts();
+        }
+        return productRepository.getProductsByCategory(catgID);
+    }
 }

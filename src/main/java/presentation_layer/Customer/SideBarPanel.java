@@ -1,16 +1,19 @@
 package presentation_layer.Customer;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 
-import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 public class SideBarPanel extends JPanel {
+
     private JButton btnHome;
-    private JButton btnCategory;
     private JButton btnOrder;
     private JButton btnHistory;
     private JButton btnAccount;
@@ -20,36 +23,39 @@ public class SideBarPanel extends JPanel {
     }
 
     private void initUI() {
-        setLayout(new GridLayout(5, 1, 10, 10));
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        setPreferredSize(new Dimension(220, 0));
+        setPreferredSize(new Dimension(210, 0));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new EmptyBorder(20, 15, 20, 15));
+        setBackground(new Color(245, 245, 245));
 
-        btnHome = createMenuButton("Home");
-        btnCategory = createMenuButton("Category");
-        btnOrder = createMenuButton("Order");
-        btnHistory = createMenuButton("History");
-        btnAccount = createMenuButton("Account");
+        btnHome = createMenuButton("HOME");
+        btnOrder = createMenuButton("ORDER");
+        btnHistory = createMenuButton("HISTORY");
+        btnAccount = createMenuButton("ACCOUNT");
 
         add(btnHome);
-        add(btnCategory);
+        add(Box.createVerticalStrut(20));
         add(btnOrder);
+        add(Box.createVerticalStrut(20));
         add(btnHistory);
+        add(Box.createVerticalStrut(20));
         add(btnAccount);
+        add(Box.createVerticalGlue());
     }
 
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setFont(new Font("Arial", Font.BOLD, 17));
         button.setFocusPainted(false);
+        button.setBackground(new Color(214, 228, 240));
+        button.setMaximumSize(new Dimension(180, 90));
+        button.setPreferredSize(new Dimension(180, 70));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         return button;
     }
 
     public JButton getBtnHome() {
         return btnHome;
-    }
-
-    public JButton getBtnCategory() {
-        return btnCategory;
     }
 
     public JButton getBtnOrder() {

@@ -1,22 +1,22 @@
 package model_layer;
 
 public class methodPayment {
-    private int payID;
+    private String payID;
     private String paymentMethod;
 
     public methodPayment() {
     }
 
-    public methodPayment(int payID, String paymentMethod) {
+    public methodPayment(String payID, String paymentMethod) {
         this.payID = payID;
         this.paymentMethod = paymentMethod;
     }
 
-    public int getPayID() {
+    public String getPayID() {
         return payID;
     }
 
-    public void setPayID(int payID) {
+    public void setPayID(String payID) {
         this.payID = payID;
     }
 

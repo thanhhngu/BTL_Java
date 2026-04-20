@@ -389,6 +389,59 @@ public class HandleAction {
         }
     }
 
+    public static void handleEventImportProduct(JTable table, DefaultTableModel model, String shopId, Component parent) {
+        ExcelService excelService = new ExcelService();
+        List<products> importedProducts = excelService.selectAndImportFile(parent, shopId);
+        if (importedProducts != null && !importedProducts.isEmpty()) {
+            ProductRepository repo = new ProductRepository();
+
+            String[] columnNames = {"Product ID", "CatagoryID", "Name", "Unit Price", "Unit In Stock", "Quantity Per Unit"};
+
+            Object[][] data = new Object[importedProducts.size()][6];
+
+            for (int i = 0; i < importedProducts.size(); i++) {
+                products p = importedProducts.get(i);
+                data[i][0] = p.getProductID();
+                data[i][1] = p.getCatgID();
+                data[i][2] = p.getName();
+                data[i][3] = p.getUnitPrice();
+                data[i][4] = p.getUnitInStock();
+                data[i][5] = p.getQuantityPerUnit();
+            }
+
+            DefaultTableModel mdl = new DefaultTableModel(data, columnNames);
+            JTable tbl = new JTable(mdl);
+
+            JScrollPane scrollPane = new JScrollPane(tbl);
+
+            int cf = JOptionPane.showConfirmDialog(
+                    scrollPane,
+                    "Preview Imported Products",
+                    "Confirm Import",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            // insert
+            if (cf == JOptionPane.YES_OPTION) {
+                boolean allSuccess = true;
+                for (products p : importedProducts) {
+                    boolean success = repo.insertProduct(p);
+                    if (!success) {
+                        allSuccess = false;
+                        JOptionPane.showMessageDialog(parent, "Failed to import product: " + p.getName());
+                    }
+                }
+                if (allSuccess) {
+                    JOptionPane.showMessageDialog(parent, "All products imported successfully!");
+                }
+                refreshTable(model, shopId);
+            } else {
+                JOptionPane.showMessageDialog(parent, "No products were imported.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(parent, "No products were imported.");
+        }
+    }
 
     //--------------------- handleAction for ConfirmPanel------------------
     public static void handleConfirmAll(JTable table, DefaultTableModel model, String shopId, Component parent) {
@@ -448,7 +501,7 @@ public class HandleAction {
                 o -> o.getOrderID(),
                 o -> showOrderDetail(o, table, model, shopId, parent)
         );
-
+        table.repaint();
     }
 
 
@@ -484,5 +537,104 @@ public class HandleAction {
         mainPanel.revalidate();
         mainPanel.repaint();
     }
+
+    //----------------------handleAction for FreePickPanel------------------
+
+    public static JPanel showOrderDetailForShipper(order o, JTable table, DefaultTableModel model, String id, Component parent, String nStatus) {
+
+        JPanel detailPanel = new JPanel(new BorderLayout());
+
+        JPanel infoPanel = new JPanel(new GridLayout(0, 2, 10, 5));
+
+        JLabel lblOrderID = new JLabel();
+        JLabel lblCustomerID = new JLabel();
+        JLabel lblShipperID = new JLabel();
+        JLabel lblOrderDate = new JLabel();
+        JLabel lblShippedDate = new JLabel();
+        JLabel lblFreight = new JLabel();
+        JLabel lblAmount = new JLabel();
+        JLabel lblStatus = new JLabel();
+
+        infoPanel.add(new JLabel("Order ID:"));
+        infoPanel.add(lblOrderID);
+        infoPanel.add(new JLabel("Customer ID:"));
+        infoPanel.add(lblCustomerID);
+        infoPanel.add(new JLabel("Shipper ID:"));
+        infoPanel.add(lblShipperID);
+        infoPanel.add(new JLabel("Order Date:"));
+        infoPanel.add(lblOrderDate);
+        infoPanel.add(new JLabel("Shipped Date:"));
+        infoPanel.add(lblShippedDate);
+        infoPanel.add(new JLabel("Freight:"));
+        infoPanel.add(lblFreight);
+        infoPanel.add(new JLabel("Amount:"));
+        infoPanel.add(lblAmount);
+        infoPanel.add(new JLabel("Status:"));
+        infoPanel.add(lblStatus);
+
+        DefaultTableModel productModel = new DefaultTableModel(
+                new String[]{"Product", "Qty"}, 0
+        );
+        JTable productTable = new JTable(productModel);
+
+        detailPanel.add(infoPanel, BorderLayout.NORTH);
+        detailPanel.add(new JScrollPane(productTable), BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnClose = new JButton("Close");
+        JButton btnConfirm = new JButton("Confirm");
+
+        btnClose.addActionListener(e -> {
+            SwingUtilities.getWindowAncestor(detailPanel).dispose();
+        });
+
+        btnConfirm.addActionListener(e -> {
+            boolean successAll = true;
+            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), nStatus);
+            if (!success) {
+                successAll = false;
+                JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + o.getOrderID());
+            }
+            if (successAll) {
+                JOptionPane.showMessageDialog(parent, "Order confirmed successfully!");
+
+                Window window = SwingUtilities.getWindowAncestor(detailPanel);
+                if (window != null) {
+                    window.dispose();
+                }
+            }
+        });
+
+        if(o.getShippedDate()==null || o.getStatus().equals("PENDING")) {
+            buttonPanel.add(btnConfirm);
+        }
+        buttonPanel.add(btnClose);
+
+        detailPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        lblOrderID.setText(o.getOrderID());
+        lblCustomerID.setText(o.getCustomerID());
+        lblShipperID.setText(o.getShipperID());
+        lblOrderDate.setText(o.getOrderDate().toString());
+        if (o.getShippedDate() != null) {
+            lblShippedDate.setText(o.getShippedDate().toString());
+        } else {
+            lblShippedDate.setText("Not shipped yet");
+        }
+        lblFreight.setText(String.valueOf(o.getFreight()));
+        lblAmount.setText(String.valueOf(o.getAmount()));
+        lblStatus.setText(o.getStatus());
+
+        productModel.setRowCount(0);
+        for (order_detail item : o.getItems()) {
+            productModel.addRow(new Object[]{
+                    item.getProduct().getName(),
+                    item.getQuantity()
+            });
+        }
+
+        return detailPanel;
+    }
+
 }
 

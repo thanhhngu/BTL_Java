@@ -1,22 +1,22 @@
 package model_layer;
 
 public class category {
-    private int catgID;
+    private String catgID;
     private String name;
 
     public category() {
     }
 
-    public category(int catgID, String name) {
+    public category(String catgID, String name) {
         this.catgID = catgID;
         this.name = name;
     }
 
-    public int getCatgID() {
+    public String getCatgID() {
         return catgID;
     }
 
-    public void setCatgID(int catgID) {
+    public void setCatgID(String catgID) {
         this.catgID = catgID;
     }
 

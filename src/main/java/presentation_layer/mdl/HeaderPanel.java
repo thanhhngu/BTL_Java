@@ -13,11 +13,11 @@ public class HeaderPanel extends JPanel {
 
     private String username;
 
-    public HeaderPanel(String un, Component parent) {
+    public HeaderPanel(String un) {
         this.username = un;
         JPanel header = createHeader();
         add(header);
-        btnLogout.addActionListener(e -> logout(parent));
+        btnLogout.addActionListener(e -> logout(this));
 
     }
 
@@ -54,7 +54,7 @@ public class HeaderPanel extends JPanel {
 
     private void logout(Component parent) {
         int confirm = JOptionPane.showConfirmDialog(
-                parent,
+                this,
                 "Bạn có chắc muốn đăng xuất không?",
                 "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION

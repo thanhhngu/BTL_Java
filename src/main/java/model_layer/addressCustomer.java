@@ -1,32 +1,32 @@
 package model_layer;
 
 public class addressCustomer {
-    private int addressID;
-    private int customerID;
+    private String addressID;
+    private String customerID;
     private String address;
 
     public addressCustomer() {
     }
 
-    public addressCustomer(int addressID, int customerID, String address) {
+    public addressCustomer(String addressID, String customerID, String address) {
         this.addressID = addressID;
         this.customerID = customerID;
         this.address = address;
     }
 
-    public int getAddressID() {
+    public String getAddressID() {
         return addressID;
     }
 
-    public void setAddressID(int addressID) {
+    public void setAddressID(String addressID) {
         this.addressID = addressID;
     }
 
-    public int getCustomerID() {
+    public String getCustomerID() {
         return customerID;
     }
 
-    public void setCustomerID(int customerID) {
+    public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
 

@@ -34,7 +34,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         mainPanel.add(sb, BorderLayout.WEST);
 
         // Header
-        JPanel header = new HeaderPanel(username, this);
+        JPanel header = new HeaderPanel(username);
         mainPanel.add(header, BorderLayout.NORTH);
 
         // Content

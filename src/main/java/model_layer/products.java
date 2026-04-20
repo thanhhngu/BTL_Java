@@ -109,4 +109,14 @@ public class products {
     public void setQtySold(int qtySold) {
         this.qtySold = qtySold;
     }
+
+    private String shopName;
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
 }

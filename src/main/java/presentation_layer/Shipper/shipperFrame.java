@@ -16,103 +16,83 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import presentation_layer.Login.loginFrame;
+import presentation_layer.Shipper.MenuPanel.FreePickPanel;
+import presentation_layer.Shipper.MenuPanel.OrdersPanel;
+import presentation_layer.Shipper.MenuPanel.WorkPerPanel;
+import presentation_layer.Shop.MenuPanel.ConfirmPanel;
+import presentation_layer.Shop.MenuPanel.HomePanel;
+import presentation_layer.Shop.MenuPanel.RevenuePanel;
+import presentation_layer.Shop.MenuPanel.StatusPanel;
+import presentation_layer.Shop.shopFrame;
+import presentation_layer.itf.SidebarCallback;
+import presentation_layer.mdl.AccountPanel;
+import presentation_layer.mdl.HeaderPanel;
+import presentation_layer.mdl.SideBarr;
 
-public class shipperFrame extends JFrame {
+public class shipperFrame extends JFrame implements SidebarCallback {
+    private String id = "SH003";
 
-    public static final String HOME = "HOME";
+    private JPanel content = new JPanel(new BorderLayout());
+    private JPanel mainPanel = new JPanel(new BorderLayout());
+    private SideBarr sb;
 
-    private String username;
+    private FreePickPanel freePickPanel;
+    private OrdersPanel ordersPanel;
+    private WorkPerPanel workPerPanel;
 
-    // Header
-    private JLabel lblUsername;
-    private JTextField txtSearch;
-    private JButton btnSearch;
-    private JButton btnLogout;
+    private AccountPanel accountPanel = new AccountPanel();
 
-   
-  
-    public shipperFrame(String username) {
-        this.username = username;
-        initUI();
-        initEvents();
-        setVisible(true);
-    }
+    public shipperFrame(String un, String id) {
+        this.id = id;
 
-    private void initUI() {
-        setTitle("Customer Main");
         setSize(1400, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
-        
-        add(createHeader(), BorderLayout.NORTH);
-        
-        //phan chia thanh cac panel chuc nang
-        JPanel centerPanel = new JPanel();
-        centerPanel.setBackground(Color.blue);
-        centerPanel.add(new JLabel("SHOP DASHBOARD"));
-        add(centerPanel, BorderLayout.CENTER);
 
-    }
-    private JPanel createHeader() {
-        JPanel headerPanel = new JPanel(new BorderLayout(20, 10));
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        sb = new SideBarr(new String[]{"Orders", "FreePick", "WorkPerformance", "Account"}, this);
+        mainPanel.add(sb, BorderLayout.WEST);
 
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        lblUsername = new JLabel("Xin chào, " + username);
-        lblUsername.setFont(new Font("Arial", Font.BOLD, 18));
-        leftPanel.add(lblUsername);
+        JPanel header = new HeaderPanel(un);
+        mainPanel.add(header, BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        txtSearch = new JTextField(28);
-        txtSearch.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setFont(new Font("Arial", Font.BOLD, 14));
 
-        centerPanel.add(txtSearch);
-        centerPanel.add(btnSearch);
+        ordersPanel = new OrdersPanel(id);
+        freePickPanel = new FreePickPanel(id);
+        workPerPanel = new WorkPerPanel(id);
 
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnLogout = new JButton("Đăng xuất");
-        btnLogout.setFont(new Font("Arial", Font.BOLD, 14));
-        btnLogout.setPreferredSize(new Dimension(130, 40));
-        rightPanel.add(btnLogout);
+        content.add(ordersPanel, BorderLayout.CENTER);
+        mainPanel.add(content, BorderLayout.CENTER);
 
-        headerPanel.add(leftPanel, BorderLayout.WEST);
-        headerPanel.add(centerPanel, BorderLayout.CENTER);
-        headerPanel.add(rightPanel, BorderLayout.EAST);
-
-        return headerPanel;
+        add(mainPanel);
+        setVisible(true);
     }
 
-    private JPanel createPlaceholderPanel(String text) {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.CENTER);
-        return panel;
-    }
+    @Override
+    public void onMenuClick(String cmd) {
+        content.removeAll();
 
-    private void initEvents() {
-        if(btnLogout !=null)
-        btnLogout.addActionListener(e -> logout());
-        
-    }
-
-    private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn có chắc muốn đăng xuất không?",
-                "Xác nhận đăng xuất",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            dispose();
-            new loginFrame().setVisible(true);
+        switch (cmd) {
+            case "Orders":
+                content.add(ordersPanel, BorderLayout.CENTER);
+                break;
+            case "FreePick":
+                content.add(freePickPanel, BorderLayout.CENTER);
+                break;
+            case "WorkPerformance":
+                content.add(workPerPanel, BorderLayout.CENTER);
+                break;
+            case "Account":
+                content.add(accountPanel, BorderLayout.CENTER);
+                break;
         }
+
+        content.revalidate();
+        content.repaint();
     }
 
-    
+    public static void main(String[] args) {
+        new shipperFrame("Shipper Owner", "SH003").setVisible(true);
+    }
+
    
 }

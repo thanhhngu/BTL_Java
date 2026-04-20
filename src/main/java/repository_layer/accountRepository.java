@@ -23,7 +23,7 @@ public class accountRepository {
 
             if (rs.next()) {
                 account acc = new account();
-                acc.setAccountID(rs.getInt("accountID"));
+                acc.setAccountID(rs.getString("accountID"));
                 acc.setUsername(rs.getString("username"));
                 acc.setPassword(rs.getString("password"));
                 acc.setRole(rs.getString("role"));
@@ -59,7 +59,7 @@ public class accountRepository {
 
     public boolean insertAccount(account acc) {
         String sql = "INSERT INTO Account(username, password, role, customerID, shopID, shipperID) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBconnection.openConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -95,4 +95,52 @@ public class accountRepository {
         return false;
     }
 
+    // =========================
+    // THEM PHAN DIA CHI CUSTOMER
+    // =========================
+    public boolean insertCustomerAddress(String customerID, String address) {
+        String nextAddressID = generateNextAddressID();
+
+        String sql = "INSERT INTO Address_Customer(addressID, customerID, address) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nextAddressID);
+            ps.setString(2, customerID);
+            ps.setString(3, address);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private String generateNextAddressID() {
+        String sql = "SELECT MAX(addressID) AS maxID FROM Address_Customer";
+
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                String maxID = rs.getString("maxID");
+
+                if (maxID == null || maxID.trim().isEmpty()) {
+                    return "A001";
+                }
+
+                int number = Integer.parseInt(maxID.substring(1));
+                return String.format("A%03d", number + 1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "A001";
+    }
 }

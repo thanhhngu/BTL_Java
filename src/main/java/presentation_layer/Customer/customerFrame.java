@@ -1,4 +1,5 @@
 package presentation_layer.Customer;
+import presentation_layer.Login.loginFrame;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -13,41 +14,35 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
-import presentation_layer.Login.loginFrame;
 
 public class customerFrame extends JFrame {
 
     public static final String HOME = "HOME";
-    public static final String CATEGORY = "CATEGORY";
     public static final String ORDER = "ORDER";
     public static final String HISTORY = "HISTORY";
     public static final String ACCOUNT = "ACCOUNT";
 
     private String username;
+    private String customerID;
 
-    // Header
     private JLabel lblUsername;
     private JTextField txtSearch;
     private JButton btnSearch;
     private JButton btnLogout;
 
-    // Main layout parts
     private SideBarPanel sidebarPanel;
     private JPanel contentPanel;
     private CardLayout cardLayout;
-    private CartPanel cartPanel;
 
-    // Center cards
-    private ProductlistPanel homePanel;
-    private JPanel categoryPanel;
-    private JPanel orderPanel;
-    private JPanel historyPanel;
+    private ProductListPanel homePanel;
+    private OrderPanel orderPanel;
+    private HistoryPanel historyPanel;
     private JPanel accountPanel;
 
-    public customerFrame(String username) {
+    public customerFrame(String username, String customerID) {
         this.username = username;
+        this.customerID = customerID;
+
         initUI();
         initEvents();
         showPanel(HOME);
@@ -68,24 +63,20 @@ public class customerFrame extends JFrame {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
-        homePanel = new ProductlistPanel();
-        categoryPanel = createPlaceholderPanel("CATEGORY PANEL");
-        orderPanel = createPlaceholderPanel("ORDER PANEL - đơn đang chờ xử lí / đang giao");
-        historyPanel = createPlaceholderPanel("HISTORY PANEL - đơn đã mua");
-        accountPanel = createPlaceholderPanel("ACCOUNT PANEL - form sửa thông tin");
+        
+        orderPanel = new OrderPanel(customerID);
+        homePanel = new ProductListPanel(orderPanel);
+        historyPanel = new HistoryPanel(customerID);
+        accountPanel = createPlaceholderPanel("ACCOUNT PANEL");
 
         contentPanel.add(homePanel, HOME);
-        contentPanel.add(categoryPanel, CATEGORY);
         contentPanel.add(orderPanel, ORDER);
         contentPanel.add(historyPanel, HISTORY);
         contentPanel.add(accountPanel, ACCOUNT);
 
         add(contentPanel, BorderLayout.CENTER);
-
-        cartPanel = new CartPanel();
-        add(cartPanel, BorderLayout.EAST);
     }
-
+// header
     private JPanel createHeader() {
         JPanel headerPanel = new JPanel(new BorderLayout(20, 10));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -119,65 +110,34 @@ public class customerFrame extends JFrame {
 
     private JPanel createPlaceholderPanel(String text) {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        JLabel label = new JLabel(text, JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
     }
 
     private void initEvents() {
-        sidebarPanel.getBtnHome().addActionListener(e -> showPanel(HOME));
-
-        sidebarPanel.getBtnCategory().addActionListener(e -> {
-            showPanel(CATEGORY);
-            // TODO: load category data
-        });
-
-        sidebarPanel.getBtnOrder().addActionListener(e -> {
-            showPanel(ORDER);
-            // TODO: query đơn đang chờ xử lí / đang giao theo customer
-        });
-
-        sidebarPanel.getBtnHistory().addActionListener(e -> {
-            showPanel(HISTORY);
-            // TODO: query lịch sử đơn hàng theo customer
-        });
-
-        sidebarPanel.getBtnAccount().addActionListener(e -> {
-            showPanel(ACCOUNT);
-            // TODO: mở form hoặc load panel update thông tin
-        });
+        sidebarPanel.getBtnHome().addActionListener(e -> goHome());
+        sidebarPanel.getBtnOrder().addActionListener(e -> showPanel(ORDER));
+        sidebarPanel.getBtnHistory().addActionListener(e -> showPanel(HISTORY));
+        sidebarPanel.getBtnAccount().addActionListener(e -> showPanel(ACCOUNT));
 
         btnSearch.addActionListener(e -> searchProductByName());
         txtSearch.addActionListener(e -> searchProductByName());
-
         btnLogout.addActionListener(e -> logout());
-        homePanel.setProductSelectListener(product -> {
-            if (cartPanel.isEmpty()) {
-                cartPanel.addProduct(product);
-            } else if (cartPanel.getCurrentShopId().equals(product.getShopID())) {
-                cartPanel.addProduct(product);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Chỉ được đặt sản phẩm cùng 1 shop trong một đơn hàng.");
-            }
-        });
-        cartPanel.getBtnCheckout().addActionListener(e -> {
-            if (cartPanel.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Giỏ hàng đang trống.");
-                return;
-            }
+    }
 
-            JOptionPane.showMessageDialog(this, "Đặt hàng thành công (tạm thời mới là demo UI).");
+    private void goHome() {
+        txtSearch.setText("");
+        showPanel(HOME);
 
-            cartPanel.clearCart();
-        });
-        
+        if (homePanel != null) {
+            homePanel.reloadDefaultState();
+        }
     }
 
     private void searchProductByName() {
         String keyword = txtSearch.getText().trim();
-
         showPanel(HOME);
 
         if (homePanel != null) {
@@ -201,14 +161,6 @@ public class customerFrame extends JFrame {
 
     public void showPanel(String panelName) {
         cardLayout.show(contentPanel, panelName);
-    }
-
-    public CartPanel getCartPanel() {
-        return cartPanel;
-    }
-
-    public ProductlistPanel getHomePanel() {
-        return homePanel;
     }
 
 }

@@ -30,6 +30,7 @@ public class HomePanel extends JPanel {
         JPanel tablePanel = new JPanel(new BorderLayout());
         initTable(tablePanel);
         JPanel sidePanel = new JPanel(new BorderLayout());
+
         initControl(sidePanel);
 
         sidePanel.setPreferredSize(new Dimension(300, 0));
@@ -76,18 +77,21 @@ public class HomePanel extends JPanel {
         JButton btnAdd = new JButton("Add Product");
         JButton btnEdit = new JButton("Edit Product");
         JButton btnRemove = new JButton("Delete Product");
+        JButton btnImEx = new JButton("Import");
 
 
-        JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        JPanel controlPanel = new JPanel(new GridLayout(4, 1, 10, 10));
         controlPanel.add(btnAdd);
         controlPanel.add(btnEdit);
         controlPanel.add(btnRemove);
+        controlPanel.add(btnImEx);
 
         sidePanel.add(controlPanel, BorderLayout.NORTH);
 
         btnAdd.addActionListener(e -> handleEventAddProduct(table, model, this.id, this));
         btnEdit.addActionListener(e -> handleEventEditProduct(table, model, this.id, this));
         btnRemove.addActionListener(e -> handeEventDeleteProduct(table, model, this.id, this));
+        btnImEx.addActionListener(e -> handleEventImportProduct(table, model, this.id, this));
     }
 
 

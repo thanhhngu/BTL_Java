@@ -1,7 +1,7 @@
 package model_layer;
 
 public class account {
-    private int accountID;
+    private String accountID;
     private static String username;
     private String password;
     private String role;
@@ -13,7 +13,7 @@ public class account {
     public account() {
     }
 
-    public account(int accountID, String username, String password, String role,
+    public account(String accountID, String username, String password, String role,
                    String customerID, String shopID, String shipperID) {
         this.accountID = accountID;
         this.username = username;
@@ -24,11 +24,11 @@ public class account {
         this.shipperID = shipperID;
     }
 
-    public int getAccountID() {
+    public String getAccountID() {
         return accountID;
     }
 
-    public void setAccountID(int accountID) {
+    public void setAccountID(String accountID) {
         this.accountID = accountID;
     }
 
