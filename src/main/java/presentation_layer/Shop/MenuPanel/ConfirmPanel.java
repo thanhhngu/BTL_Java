@@ -63,7 +63,7 @@ public class ConfirmPanel extends JPanel {
         handleDClickRowTable(table,
                 orderList,
                 o -> o.getOrderID(),
-                o -> showOrderDetail(o, model, this.id, this)
+                o -> showOrderDetail(o, table, model, this.id, this)
                 );
     }
 

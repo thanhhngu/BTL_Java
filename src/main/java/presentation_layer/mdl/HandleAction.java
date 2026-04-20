@@ -122,7 +122,7 @@ public class HandleAction {
         return showImg(imgPath);
     }
 
-    public static JPanel showOrderDetail(order o, DefaultTableModel model, String shopId, Component parent) {
+    public static JPanel showOrderDetail(order o, JTable table, DefaultTableModel model, String shopId, Component parent) {
 
         JPanel detailPanel = new JPanel(new BorderLayout());
 
@@ -171,21 +171,39 @@ public class HandleAction {
         });
 
         btnConfirm.addActionListener(e -> {
+            boolean successAll = true;
             boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "CONFIRMED");
-            if (success) {
-                JOptionPane.showMessageDialog(parent, "Product deleted successfully!");
-                refreshTable(model, shopId);
+            if (!success) {
+                successAll = false;
+                JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + o.getOrderID());
+            }
+            for (order_detail item : o.getItems()) {
+                boolean success2 = new ProductRepository().updateProductUnitInStock(item.getProduct().getProductID());
+                if (!success2) {
+                    successAll = false;
+                    JOptionPane.showMessageDialog(parent, "Failed to update stock for product: " + item.getProduct().getName());
+                }
+            }
+
+            if (successAll) {
+                JOptionPane.showMessageDialog(parent, "Order confirmed successfully!");
+                // refresh table
+                showOrdersStatus(table, model, shopId, "PENDING", parent);
+
+                Window window = SwingUtilities.getWindowAncestor(detailPanel);
+                if (window != null) {
+                    window.dispose();
+                }
             }
         });
 
-        if(o.getShippedDate()==null || o.getStatus().equals("SHIPPING")) {
+        if(o.getShippedDate()==null || o.getStatus().equals("PENDING")) {
             buttonPanel.add(btnConfirm);
         }
         buttonPanel.add(btnClose);
 
         detailPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // ===== Gán dữ liệu =====
         lblOrderID.setText(o.getOrderID());
         lblCustomerID.setText(o.getCustomerID());
         lblShipperID.setText(o.getShipperID());
@@ -391,11 +409,16 @@ public class HandleAction {
                     JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + orderID);
                 }
             }
+            boolean success2 = new ProductRepository().updateProductUnitInStock(null);
+            if (!success2) {
+                allSuccess = false;
+                JOptionPane.showMessageDialog(parent, "Failed to update product stock after confirming orders!");
+            }
             if (allSuccess) {
                 JOptionPane.showMessageDialog(parent, "All orders confirmed successfully!");
             }
             // refresh table
-            refreshTable(model, shopId);
+            showOrdersStatus(table, model, shopId, "PENDING", parent);
         }
 
     }
@@ -423,7 +446,7 @@ public class HandleAction {
         handleDClickRowTable(table,
                 orderList,
                 o -> o.getOrderID(),
-                o -> showOrderDetail(o, model, shopId, parent)
+                o -> showOrderDetail(o, table, model, shopId, parent)
         );
 
     }

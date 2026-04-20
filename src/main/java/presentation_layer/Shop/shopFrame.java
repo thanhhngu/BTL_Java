@@ -78,5 +78,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         content.repaint();
     }
 
-
+    public static void main(String[] args) {
+        new shopFrame("Shop Owner", "S001").setVisible(true);
+    }
 }

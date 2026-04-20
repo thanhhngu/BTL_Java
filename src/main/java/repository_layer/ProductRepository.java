@@ -228,4 +228,29 @@ public class ProductRepository {
         }
         return list;
     }
+
+    public boolean updateProductUnitInStock(String productId) {
+        String sql = "UPDATE Product p " +
+                "JOIN order_detail od ON p.productID = od.productID " +
+                "JOIN orders o ON o.orderID = od.orderID " +
+                "SET p.unitInStock = p.unitInStock - od.quantity " +
+                "WHERE o.status = 'CONFIRMED'";
+
+        if (productId != null) {
+            sql += " AND p.productID = ?";
+        }
+
+        try (Connection con = DBconnection.openConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+            if (productId != null) {
+                ps.setString(1, productId);
+            }
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return false;
+    }
 }
