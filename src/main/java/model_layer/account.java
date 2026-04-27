@@ -10,6 +10,8 @@ public class account {
     private String shopID;
     private String shipperID;
 
+    private String roleID;
+
     public account() {
     }
 
@@ -78,5 +80,13 @@ public class account {
 
     public void setShipperID(String shipperID) {
         this.shipperID = shipperID;
+    }
+
+    public String getRoleID() {
+        return roleID;
+    }
+
+    public void setRoleID(String roleID) {
+        this.roleID = roleID;
     }
 }

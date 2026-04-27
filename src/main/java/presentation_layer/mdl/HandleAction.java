@@ -1,5 +1,6 @@
 package presentation_layer.mdl;
 
+import model_layer.account;
 import model_layer.order;
 import model_layer.order_detail;
 import model_layer.products;
@@ -10,10 +11,18 @@ import repository_layer.ProductRepository;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.function.Function;
 
 import static presentation_layer.mdl.ShowImage.showImg;
+//export pdf
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.layout.*;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.*;
+import repository_layer.accountRepository;
 
 public class HandleAction {
 
@@ -165,6 +174,7 @@ public class HandleAction {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnClose = new JButton("Close");
         JButton btnConfirm = new JButton("Confirm");
+        JButton btnIAInvoice = new JButton("Invoice");
 
         btnClose.addActionListener(e -> {
             SwingUtilities.getWindowAncestor(detailPanel).dispose();
@@ -197,9 +207,34 @@ public class HandleAction {
             }
         });
 
+        btnIAInvoice.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Invoice as PDF");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Documents", "pdf"));
+
+            String defaultFileName = o.getOrderID() + ".pdf";
+            fileChooser.setSelectedFile(new File(defaultFileName));
+
+            int userSelection = fileChooser.showSaveDialog(parent);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+
+                String path = fileToSave.getAbsolutePath();
+                if (!path.toLowerCase().endsWith(".pdf")) {
+                    path += ".pdf";
+                }
+
+                exportPDFInvoice(o, path);
+
+                JOptionPane.showMessageDialog(parent, "Invoice exported successfully to: " + path);
+            }
+        });
+
         if(o.getShippedDate()==null || o.getStatus().equals("PENDING")) {
             buttonPanel.add(btnConfirm);
         }
+        buttonPanel.add(btnIAInvoice);
         buttonPanel.add(btnClose);
 
         detailPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -226,6 +261,45 @@ public class HandleAction {
         }
 
         return detailPanel;
+    }
+
+    public static void exportPDFInvoice(order o, String filePath) {
+        try {
+            PdfWriter writer = new PdfWriter(filePath);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+            //format price
+            DecimalFormat df = new DecimalFormat("#,###");
+
+            document.add(new Paragraph("HOA DON BAN HANG").setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("Order ID: " + o.getOrderID()));
+            document.add(new Paragraph("Customer: " + o.getCustomerID()));
+
+            Table table = new Table(new float[]{2, 2, 1, 2}); // 4 cot
+            table.setWidth(UnitValue.createPercentValue(100)); //100 width pdf
+            table.addHeaderCell("Product Name");
+            table.addHeaderCell("Price");
+            table.addHeaderCell("Qty");
+            table.addHeaderCell("Total");
+
+            for (order_detail item : o.getItems()) {
+                table.addCell(item.getProduct().getName());
+                String price = df.format(item.getProduct().getUnitPrice());
+                table.addCell(price);
+                table.addCell(String.valueOf(item.getQuantity()));
+                String ttPrice = df.format(item.getProduct().getUnitPrice() * item.getQuantity());
+                table.addCell(ttPrice);
+            }
+
+            document.add(table);
+            String amount = df.format(o.getAmount());
+            document.add(new Paragraph("\nTotal Amount: " + amount).setTextAlignment(TextAlignment.RIGHT));
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     //-----------------------------------------------------------------------------------------------
@@ -511,20 +585,19 @@ public class HandleAction {
         DefaultTableModel model;
         JTable table;
 
-        String[] columnNames = {"Product ID", "CategoryID", "Name", "Unit In Stock", "Quantity Sold"};
+        String[] columnNames = {"Product ID", "CategoryID", "Name", "Quantity Sold"};
 
         ProductRepository productRepo = new ProductRepository();
         List<products> productList = productRepo.getQuantitySold(shopID);
 
-        Object[][] data = new Object[productList.size()][5];
+        Object[][] data = new Object[productList.size()][4];
 
         for (int i = 0; i < productList.size(); i++) {
             products p = productList.get(i);
             data[i][0] = p.getProductID();
             data[i][1] = p.getCatgID();
             data[i][2] = p.getName();
-            data[i][3] = p.getUnitInStock();
-            data[i][4] = p.getQtySold();
+            data[i][3] = p.getQtySold();
         }
 
         mainPanel.removeAll();
@@ -636,5 +709,59 @@ public class HandleAction {
         return detailPanel;
     }
 
+
+    //-----------------------handleAction for AccountPanel-----------------------
+
+    public static void handleChangePassword(JPanel mainPanel, account acc) {
+        JPanel changePassPanel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPasswordField txtCurrentPass = new JPasswordField(15);
+        JPasswordField txtNewPass = new JPasswordField(15);
+        JPasswordField txtConfirmPass = new JPasswordField(15);
+        JButton btnSave = new JButton("Save");
+        JButton btnCancel = new JButton("Cancel");
+
+        gbc.gridx = 0; gbc.gridy = 0; changePassPanel.add(new JLabel("Current Password:"), gbc);
+        gbc.gridx = 1; changePassPanel.add(txtCurrentPass, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; changePassPanel.add(new JLabel("New Password:"), gbc);
+        gbc.gridx = 1; changePassPanel.add(txtNewPass, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2; changePassPanel.add(new JLabel("Confirm Password:"), gbc);
+        gbc.gridx = 1; changePassPanel.add(txtConfirmPass, gbc);
+
+        gbc.gridy = 3; gbc.gridx = 0; changePassPanel.add(btnCancel, gbc);
+        gbc.gridx = 1; changePassPanel.add(btnSave, gbc);
+
+        btnSave.addActionListener(e -> {
+            String currentPass = new String(txtCurrentPass.getPassword());
+            String newPass = new String(txtNewPass.getPassword());
+            String confirmPass = new String(txtConfirmPass.getPassword());
+
+            if (!newPass.equals(confirmPass)) {
+                JOptionPane.showMessageDialog(mainPanel, "New password and confirm password do not match!");
+                return;
+            }
+
+            boolean success = new accountRepository().changePassword(acc.getAccountID(), currentPass, newPass);
+            if (success) {
+                JOptionPane.showMessageDialog(mainPanel, "Password changed successfully!");
+                txtNewPass.setText("");
+                txtCurrentPass.setText("");
+                txtConfirmPass.setText("");
+            } else {
+                JOptionPane.showMessageDialog(mainPanel, "Failed to change password! Please check your current password and try again.");
+            }
+        });
+
+        mainPanel.removeAll();
+        mainPanel.add(changePassPanel, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
 }
 

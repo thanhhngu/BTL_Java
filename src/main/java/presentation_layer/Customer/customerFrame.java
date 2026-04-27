@@ -1,5 +1,6 @@
 package presentation_layer.Customer;
 import presentation_layer.Login.loginFrame;
+import presentation_layer.mdl.AccountPanel;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -37,7 +38,7 @@ public class customerFrame extends JFrame {
     private ProductListPanel homePanel;
     private OrderPanel orderPanel;
     private HistoryPanel historyPanel;
-    private JPanel accountPanel;
+    private AccountPanel accountPanel ;
 
     public customerFrame(String username, String customerID) {
         this.username = username;
@@ -67,7 +68,7 @@ public class customerFrame extends JFrame {
         orderPanel = new OrderPanel(customerID);
         homePanel = new ProductListPanel(orderPanel);
         historyPanel = new HistoryPanel(customerID);
-        accountPanel = createPlaceholderPanel("ACCOUNT PANEL");
+        accountPanel = new AccountPanel(customerID);
 
         contentPanel.add(homePanel, HOME);
         contentPanel.add(orderPanel, ORDER);

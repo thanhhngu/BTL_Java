@@ -16,7 +16,7 @@ public class order {
     private String paymentID;
     private String status;
 
-    private List<order_detail> items; // 👈 thêm dòng này
+    private List<order_detail> items;
 
     public List<order_detail> getItems() {
         return items;

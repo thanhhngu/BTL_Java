@@ -143,4 +143,60 @@ public class accountRepository {
 
         return "A001";
     }
+
+    public account getInfo(String roleID) {
+        String sql = "SELECT * FROM Account WHERE customerID = ? or shopID = ? or shipperID = ?";
+
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, roleID);
+            ps.setString(2, roleID);
+            ps.setString(3, roleID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                account acc = new account();
+                acc.setAccountID(rs.getString("accountID"));
+                acc.setUsername(rs.getString("username"));
+                acc.setPassword(rs.getString("password"));
+                acc.setRole(rs.getString("role"));
+                acc.setCustomerID(rs.getString("customerID"));
+                acc.setShopID(rs.getString("shopID"));
+                acc.setShipperID(rs.getString("shipperID"));
+                if (acc.getCustomerID() != null) {
+                    acc.setRoleID(acc.getCustomerID());
+                } else if (acc.getShopID() != null) {
+                    acc.setRoleID(acc.getShopID());
+                } else if (acc.getShipperID() != null) {
+                    acc.setRoleID(acc.getShipperID());
+                }
+                return acc;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean changePassword(String accountID, String currentPassword, String newPassword) {
+        String sql = "UPDATE account SET password = ? WHERE accountID = ? AND password = ?";
+
+        try (Connection conn = DBconnection.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newPassword);
+            ps.setString(2, accountID);
+            ps.setString(3, currentPassword);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

@@ -40,7 +40,7 @@ public class shipperFrame extends JFrame implements SidebarCallback {
     private OrdersPanel ordersPanel;
     private WorkPerPanel workPerPanel;
 
-    private AccountPanel accountPanel = new AccountPanel();
+    private AccountPanel accountPanel = new AccountPanel(id);
 
     public shipperFrame(String un, String id) {
         this.id = id;

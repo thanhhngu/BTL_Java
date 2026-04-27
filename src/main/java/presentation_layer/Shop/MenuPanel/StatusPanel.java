@@ -71,16 +71,18 @@ public class StatusPanel extends JPanel {
     public void initControl(JPanel sidePanel) {
         JButton btnDelivered = new JButton("Show Delivered");
         JButton btnShipping = new JButton("Show Shipping");
+        JButton btnConfirmed = new JButton("Show Confirmed");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
         controlPanel.add(btnDelivered);
         controlPanel.add(btnShipping);
+        controlPanel.add(btnConfirmed);
 
         sidePanel.add(controlPanel, BorderLayout.NORTH);
 
         btnDelivered.addActionListener(e -> showOrdersStatus(table, model, this.id, "DELIVERED", this));
         btnShipping.addActionListener(e -> showOrdersStatus(table, model, this.id, "SHIPPING", this));
-
+        btnConfirmed.addActionListener(e -> showOrdersStatus(table, model, this.id, "CONFIRMED", this));
 
     }
 
