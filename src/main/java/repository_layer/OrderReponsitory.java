@@ -26,9 +26,9 @@ public class OrderReponsitory {
         Map<String, order> map = new LinkedHashMap<>();
 
         String sql = "SELECT o.*, p.*, od.quantity " +
-                "FROM qldonhang.orders o " +
-                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
-                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "FROM orders o " +
+                "JOIN order_detail od ON o.orderID = od.orderID " +
+                "JOIN product p ON p.productID = od.productID " +
                 "WHERE o.status = ? ";
 
         if (shopID != null && !shopID.trim().isEmpty()) {
@@ -102,9 +102,9 @@ public class OrderReponsitory {
         Map<String, order> map = new LinkedHashMap<>();
 
         String sql = "SELECT o.*, p.*, od.quantity " +
-                "FROM qldonhang.orders o " +
-                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
-                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "FROM orders o " +
+                "JOIN order_detail od ON o.orderID = od.orderID " +
+                "JOIN product p ON p.productID = od.productID " +
                 "WHERE o.status = ? ";
 
         if (shipperID != null && !shipperID.trim().isEmpty()) {
@@ -194,9 +194,9 @@ public class OrderReponsitory {
 
     public double getTotalAmount(String ShopID, LocalDate date){
         String sql = "SELECT o.*, p.*, od.quantity " +
-                "FROM qldonhang.orders o " +
-                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
-                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "FROM orders o " +
+                "JOIN order_detail od ON o.orderID = od.orderID " +
+                "JOIN product p ON p.productID = od.productID " +
                 "WHERE p.shopID = ? and o.status = ?";
 
         if (date != null) {
@@ -234,9 +234,9 @@ public class OrderReponsitory {
 
     public LocalDate getMinOrderDate(String shopID) {
         String sql = "SELECT MIN(o.orderDate) AS minDate " +
-                "FROM qldonhang.orders o " +
-                "JOIN qldonhang.order_detail od ON o.orderID = od.orderID " +
-                "JOIN qldonhang.product p ON p.productID = od.productID " +
+                "FROM orders o " +
+                "JOIN order_detail od ON o.orderID = od.orderID " +
+                "JOIN product p ON p.productID = od.productID " +
                 "WHERE p.shopID = ?";
 
         try (Connection con = DBconnection.openConnection();
@@ -262,7 +262,7 @@ public class OrderReponsitory {
     public Map<String, Double> getMonthlyFreightStats(String shipperID) {
         Map<String, Double> monthlyStats = new LinkedHashMap<>();
         String sql = "SELECT YEAR(o.shippedDate) AS year, MONTH(o.shippedDate) AS month, SUM(o.freight) AS totalFreight " +
-                "FROM qldonhang.orders o " +
+                "FROM orders o " +
                 "WHERE o.shipperID = ? AND o.status = 'DELIVERED' AND o.shippedDate IS NOT NULL " +
                 "GROUP BY YEAR(o.shippedDate), MONTH(o.shippedDate) " +
                 "ORDER BY year DESC, month DESC";

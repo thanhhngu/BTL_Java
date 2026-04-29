@@ -42,6 +42,7 @@ public class ConfirmPanel extends JPanel {
     public void initTable(JPanel tablePanel) {
         OrderReponsitory orderRepo = new OrderReponsitory();
         List<order> orderList = orderRepo.getOrdersWithProducts("PENDING", id);
+        System.out.println(orderList.size());
 
         String[] columnNames = {"orderID", "customerID", "shipperID", "orderDate"};
 
