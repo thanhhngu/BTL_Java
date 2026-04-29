@@ -20,6 +20,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
     private ConfirmPanel confirmPanel;
     private StatusPanel statusPanel;
     private RevenuePanel revenuePanel;
+    private HeaderPanel header;
     private AccountPanel accountPanel = new AccountPanel(id);
 
     public shopFrame(String username,String id) {
@@ -33,15 +34,14 @@ public class shopFrame extends JFrame implements SidebarCallback {
         sb = new SideBarr(new String[]{"Home", "Confirm", "Status", "Revenue", "Account"}, this);
         mainPanel.add(sb, BorderLayout.WEST);
 
-        // Header
-        JPanel header = new HeaderPanel(username);
-        mainPanel.add(header, BorderLayout.NORTH);
-
-        // Content
         homePanel = new HomePanel(id);
         confirmPanel = new ConfirmPanel(id);
         statusPanel = new StatusPanel(id);
         revenuePanel = new RevenuePanel(id);
+
+        // Header
+        header = new HeaderPanel(username, homePanel.getTable(), homePanel.getModel());
+        mainPanel.add(header, BorderLayout.NORTH);
 
         content.add(homePanel, BorderLayout.CENTER);
         mainPanel.add(content, BorderLayout.CENTER);
@@ -59,18 +59,23 @@ public class shopFrame extends JFrame implements SidebarCallback {
         switch (cmd) {
             case "Home":
                 content.add(homePanel, BorderLayout.CENTER);
+                header.setTarget(homePanel.getTable(), homePanel.getModel());
                 break;
             case "Confirm":
                 content.add(confirmPanel, BorderLayout.CENTER);
+                header.setTarget(confirmPanel.getTable(), confirmPanel.getModel());
                 break;
             case "Status":
                 content.add(statusPanel, BorderLayout.CENTER);
+                header.setTarget(statusPanel.getTable(), statusPanel.getModel());
                 break;
             case "Revenue":
                 content.add(revenuePanel, BorderLayout.CENTER);
+                header.setTarget(revenuePanel.getTable(), revenuePanel.getModel());
                 break;
             case "Account":
                 content.add(accountPanel, BorderLayout.CENTER);
+                header.setTarget(null, null);
                 break;
         }
 

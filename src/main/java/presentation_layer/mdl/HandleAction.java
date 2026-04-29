@@ -4,6 +4,7 @@ import model_layer.account;
 import model_layer.order;
 import model_layer.order_detail;
 import model_layer.products;
+import presentation_layer.Style.StyledTable;
 import presentation_layer.itf.HandleActionCallBack;
 import repository_layer.OrderReponsitory;
 import repository_layer.ProductRepository;
@@ -231,7 +232,7 @@ public class HandleAction {
             }
         });
 
-        if(o.getShippedDate()==null || o.getStatus().equals("PENDING")) {
+        if(o.getStatus().equals("PENDING")) {
             buttonPanel.add(btnConfirm);
         }
         buttonPanel.add(btnIAInvoice);
@@ -583,7 +584,7 @@ public class HandleAction {
 
     public static void showQtySold(String shopID, JPanel mainPanel) {
         DefaultTableModel model;
-        JTable table;
+        StyledTable table;
 
         String[] columnNames = {"Product ID", "CategoryID", "Name", "Quantity Sold"};
 
@@ -602,7 +603,7 @@ public class HandleAction {
 
         mainPanel.removeAll();
         model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model);
+        table = new StyledTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
 

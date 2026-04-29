@@ -1,6 +1,7 @@
 package presentation_layer.Shipper.MenuPanel;
 
 import model_layer.order;
+import presentation_layer.Style.StyledTable;
 import presentation_layer.mdl.RatioSplitPanel;
 import repository_layer.OrderReponsitory;
 
@@ -16,7 +17,7 @@ public class FreePickPanel extends JPanel {
     public String id;
 
     DefaultTableModel model;
-    JTable table;
+    StyledTable table;
 
     public FreePickPanel(String id) {
         this.id = id;
@@ -56,7 +57,7 @@ public class FreePickPanel extends JPanel {
         }
 
         model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model);
+        table = new StyledTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -83,5 +84,13 @@ public class FreePickPanel extends JPanel {
             initTable(tablePanel);
             table.repaint();
         });
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
     }
 }

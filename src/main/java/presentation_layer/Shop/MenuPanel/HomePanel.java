@@ -1,5 +1,6 @@
 package presentation_layer.Shop.MenuPanel;
 
+import presentation_layer.Style.StyledTable;
 import presentation_layer.mdl.RatioSplitPanel;
 import repository_layer.ProductRepository;
 import model_layer.products;
@@ -16,7 +17,7 @@ public class HomePanel extends JPanel {
     private String id;
 
     DefaultTableModel model;
-    JTable table;
+    StyledTable table;
 
     public HomePanel(String id) {
         this.id = id;
@@ -60,7 +61,7 @@ public class HomePanel extends JPanel {
         }
 
         model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model);
+        table = new StyledTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -92,6 +93,15 @@ public class HomePanel extends JPanel {
         btnEdit.addActionListener(e -> handleEventEditProduct(table, model, this.id, this));
         btnRemove.addActionListener(e -> handeEventDeleteProduct(table, model, this.id, this));
         btnImEx.addActionListener(e -> handleEventImportProduct(table, model, this.id, this));
+    }
+
+    // Expose table and model so parent frames can attach search/filter controls
+    public StyledTable getTable() {
+        return table;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
     }
 
 

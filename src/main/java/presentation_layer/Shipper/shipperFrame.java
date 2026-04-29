@@ -42,6 +42,8 @@ public class shipperFrame extends JFrame implements SidebarCallback {
 
     private AccountPanel accountPanel = new AccountPanel(id);
 
+    private HeaderPanel header;
+
     public shipperFrame(String un, String id) {
         this.id = id;
 
@@ -52,13 +54,13 @@ public class shipperFrame extends JFrame implements SidebarCallback {
         sb = new SideBarr(new String[]{"Orders", "FreePick", "WorkPerformance", "Account"}, this);
         mainPanel.add(sb, BorderLayout.WEST);
 
-        JPanel header = new HeaderPanel(un);
-        mainPanel.add(header, BorderLayout.NORTH);
-
-
         ordersPanel = new OrdersPanel(id);
         freePickPanel = new FreePickPanel(id);
         workPerPanel = new WorkPerPanel(id);
+
+
+        header = new HeaderPanel(un, ordersPanel.getTable(), ordersPanel.getModel());
+        mainPanel.add(header, BorderLayout.NORTH);
 
         content.add(ordersPanel, BorderLayout.CENTER);
         mainPanel.add(content, BorderLayout.CENTER);
@@ -74,12 +76,15 @@ public class shipperFrame extends JFrame implements SidebarCallback {
         switch (cmd) {
             case "Orders":
                 content.add(ordersPanel, BorderLayout.CENTER);
+                header.setTarget(ordersPanel.getTable(), ordersPanel.getModel());
                 break;
             case "FreePick":
                 content.add(freePickPanel, BorderLayout.CENTER);
+                header.setTarget(freePickPanel.getTable(), freePickPanel.getModel());
                 break;
             case "WorkPerformance":
                 content.add(workPerPanel, BorderLayout.CENTER);
+                header.setTarget(workPerPanel.getTable(), workPerPanel.getModel());
                 break;
             case "Account":
                 content.add(accountPanel, BorderLayout.CENTER);

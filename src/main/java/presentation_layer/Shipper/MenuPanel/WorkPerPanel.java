@@ -1,5 +1,6 @@
 package presentation_layer.Shipper.MenuPanel;
 
+import presentation_layer.Style.StyledTable;
 import service_layer.ShipperService;
 
 import javax.swing.*;
@@ -14,8 +15,8 @@ public class WorkPerPanel extends JPanel {
     private final String shipperID;
     private final ShipperService shipperService;
 
-    private JTable table;
-    private DefaultTableModel tableModel;
+    private StyledTable table;
+    private DefaultTableModel model;
 
     public WorkPerPanel(String shipperID) {
         this.shipperID = shipperID;
@@ -36,14 +37,14 @@ public class WorkPerPanel extends JPanel {
 
         String[] columns = {"Tháng", "Tổng phí vận chuyển"};
 
-        tableModel = new DefaultTableModel(columns, 0) {
+        model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        table = new JTable(tableModel);
+        table = new StyledTable(model);
         table.setRowHeight(30);
         table.setFont(new Font("Arial", Font.PLAIN, 13));
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
@@ -57,15 +58,23 @@ public class WorkPerPanel extends JPanel {
 
     private void loadData() {
         Map<String, Double> stats = shipperService.getMonthlyFreightStats(shipperID);
-        tableModel.setRowCount(0);
+        model.setRowCount(0);
 
         DecimalFormat df = new DecimalFormat("#,##0");
 
         for (Map.Entry<String, Double> entry : stats.entrySet()) {
-            tableModel.addRow(new Object[]{
+            model.addRow(new Object[]{
                     entry.getKey(), // "YYYY-MM"
                     df.format(entry.getValue()) + " VND"
             });
         }
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
     }
 }

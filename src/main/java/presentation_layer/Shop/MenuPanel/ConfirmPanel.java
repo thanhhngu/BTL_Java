@@ -1,6 +1,7 @@
 package presentation_layer.Shop.MenuPanel;
 
 import model_layer.order;
+import presentation_layer.Style.StyledTable;
 import presentation_layer.mdl.RatioSplitPanel;
 import repository_layer.OrderReponsitory;
 
@@ -16,7 +17,7 @@ public class ConfirmPanel extends JPanel {
     public String id;
 
     DefaultTableModel model;
-    JTable table;
+    StyledTable table;
 
     public ConfirmPanel(String id) {
         this.id = id;
@@ -55,8 +56,7 @@ public class ConfirmPanel extends JPanel {
         }
 
         model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model);
-
+        table = new StyledTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
         tablePanel.add(scrollPane, BorderLayout.CENTER);
@@ -77,6 +77,15 @@ public class ConfirmPanel extends JPanel {
         sidePanel.add(controlPanel, BorderLayout.NORTH);
 
         btnCAll.addActionListener(e -> handleConfirmAll(table, model, this.id, this));
+    }
+
+    // Expose table and model so parent frames can attach search/filter controls
+    public StyledTable getTable() {
+        return table;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
     }
 
 

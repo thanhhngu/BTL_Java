@@ -3,6 +3,11 @@ package presentation_layer.mdl;
 import presentation_layer.Login.loginFrame;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 
 public class HeaderPanel extends JPanel {
@@ -11,14 +16,34 @@ public class HeaderPanel extends JPanel {
     private JButton btnSearch;
     private JButton btnLogout;
 
+    private JTable targetTable;
+    private DefaultTableModel targetModel;
+    private TableRowSorter<DefaultTableModel> sorter;
+
     private String username;
 
-    public HeaderPanel(String un) {
+
+    public HeaderPanel(String un, JTable table, DefaultTableModel tableModel) {
         this.username = un;
+        this.targetTable = table;
+        this.targetModel = tableModel;
+
         JPanel header = createHeader();
         add(header);
         btnLogout.addActionListener(e -> logout(this));
 
+    }
+
+    public void setTarget(JTable table, DefaultTableModel tableModel) {
+        this.targetTable = table;
+        this.targetModel = tableModel;
+
+        if (tableModel != null && table != null) {
+            sorter = new TableRowSorter<>(tableModel);
+            table.setRowSorter(sorter);
+        } else {
+            sorter = null;
+        }
     }
 
     private JPanel createHeader() {
@@ -30,14 +55,42 @@ public class HeaderPanel extends JPanel {
         lblUsername.setFont(new Font("Arial", Font.BOLD, 18));
         leftPanel.add(lblUsername);
 
+
+        //search
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         txtSearch = new JTextField(28);
         txtSearch.setFont(new Font("Arial", Font.PLAIN, 16));
         btnSearch = new JButton("Tìm kiếm");
         btnSearch.setFont(new Font("Arial", Font.BOLD, 14));
 
+        sorter = null;
+        if (targetModel != null && targetTable != null) {
+            sorter = new TableRowSorter<>(targetModel);
+            targetTable.setRowSorter(sorter);
+        }
+
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { search(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { search(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { search(); }
+
+            private void search() {
+                if (sorter == null) return; // nothing to search against
+                String text = txtSearch.getText();
+                if (text == null || text.trim().length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+        });
+
         centerPanel.add(txtSearch);
         centerPanel.add(btnSearch);
+
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnLogout = new JButton("Đăng xuất");

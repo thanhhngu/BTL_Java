@@ -1,9 +1,11 @@
 package presentation_layer.Shop.MenuPanel;
 
+import presentation_layer.Style.StyledTable;
 import presentation_layer.mdl.RatioSplitPanel;
 import repository_layer.OrderReponsitory;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 
@@ -11,6 +13,8 @@ import static presentation_layer.mdl.HandleAction.showQtySold;
 
 public class RevenuePanel extends JPanel {
     private String id;
+    DefaultTableModel model;
+    StyledTable table;
 
     public RevenuePanel(String id) {
         this.id = id;
@@ -37,26 +41,39 @@ public class RevenuePanel extends JPanel {
     public void initMain(JPanel mainPanel) {
         mainPanel.removeAll();
         mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBackground(Color.WHITE);
 
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        headerPanel.setBackground(Color.WHITE);
 
         JLabel lblTotal = new JLabel("Total Revenue:");
         Double totalRevenue = new OrderReponsitory().getTotalAmount(this.id, null);
         JLabel lblRevenueValue = new JLabel(String.format("$%,.2f", totalRevenue));
 
-        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        lblRevenueValue.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTotal.setFont(new Font("Arial", Font.BOLD, 26));
+        lblRevenueValue.setFont(new Font("Arial", Font.BOLD, 26));
         lblRevenueValue.setForeground(new Color(0, 153, 76));
 
         headerPanel.add(lblTotal);
         headerPanel.add(lblRevenueValue);
-
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        String[] columns = {"Month", "(Monthly Revenue)"};
+        model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        table = new StyledTable(model);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Monthly Revenue Details"));
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         LocalDate now = LocalDate.now();
         LocalDate minDate = new OrderReponsitory().getMinOrderDate(this.id);
@@ -65,32 +82,29 @@ public class RevenuePanel extends JPanel {
             LocalDate current = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
             LocalDate min = LocalDate.of(minDate.getYear(), minDate.getMonthValue(), 1);
 
+            model.setRowCount(0);
+
             while (!current.isBefore(min)) {
-                double monthlyRevenue = new OrderReponsitory()
-                        .getTotalAmount(this.id, current);
+                double monthlyRevenue = new OrderReponsitory().getTotalAmount(this.id, current);
 
-                JLabel lbl = new JLabel(String.format(
-                        "Revenue %02d/%d: $%,.2f",
-                        current.getMonthValue(),
-                        current.getYear(),
-                        monthlyRevenue
-                ));
+                String monthLabel = String.format("%02d/%d", current.getMonthValue(), current.getYear());
+                String revenueValue = String.format("$%,.2f", monthlyRevenue);
 
-                lbl.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-                lbl.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-
-                contentPanel.add(lbl);
+                model.addRow(new Object[]{monthLabel, revenueValue});
 
                 current = current.minusMonths(1);
             }
         }
-
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Monthly Revenue"));
-
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
+    }
+
+    public StyledTable getTable() {
+        return table;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
     }
 
     public void initControl(JPanel sidePanel, JPanel mainPanel) {
