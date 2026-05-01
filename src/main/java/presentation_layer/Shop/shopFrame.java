@@ -21,7 +21,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
     private StatusPanel statusPanel;
     private RevenuePanel revenuePanel;
     private HeaderPanel header;
-    private AccountPanel accountPanel = new AccountPanel(id);
+    private AccountPanel accountPanel;
 
     public shopFrame(String username,String id) {
         this.id = id;
@@ -38,6 +38,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         confirmPanel = new ConfirmPanel(id);
         statusPanel = new StatusPanel(id);
         revenuePanel = new RevenuePanel(id);
+        accountPanel = new AccountPanel(id);
 
         // Header
         header = new HeaderPanel(username, homePanel.getTable(), homePanel.getModel());

@@ -40,8 +40,9 @@ public class FreePickPanel extends JPanel {
     }
 
     public void initTable(JPanel tablePanel) {
+        tablePanel.removeAll();
         OrderReponsitory orderRepo = new OrderReponsitory();
-        List<order> orderList = orderRepo.getOrdersWithProducts("CONFIRMED", null);
+        List<order> orderList = orderRepo.getOrdersWithProductsForShipper("CONFIRMED", null);
 
         String[] columnNames = {"orderID", "CustomerID", "shipperID", "orderDate", "AddressID"};
 
@@ -67,6 +68,8 @@ public class FreePickPanel extends JPanel {
                 o -> o.getOrderID(),
                 o -> showOrderDetailForShipper(o, table, model, this.id, this, "SHIPPING")
         );
+        tablePanel.revalidate();
+        tablePanel.repaint();
     }
 
     public void initControl(JPanel sidePanel, JPanel tablePanel) {
@@ -80,9 +83,7 @@ public class FreePickPanel extends JPanel {
 
 
         btnRefesh.addActionListener(e -> {
-            model.setRowCount(0);
             initTable(tablePanel);
-            table.repaint();
         });
     }
 

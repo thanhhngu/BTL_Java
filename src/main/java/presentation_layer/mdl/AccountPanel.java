@@ -14,6 +14,7 @@ public class AccountPanel extends JPanel {
 
     public AccountPanel(String ID) {
         this.id = ID;
+        System.out.println(id);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         initUI();
@@ -34,6 +35,7 @@ public class AccountPanel extends JPanel {
     public void initMain(JPanel mainPanel) {
         accountRepository repo = new accountRepository();
         acc = repo.getInfo(id);
+        System.out.println(acc);
 
         Font labelFont = new Font("Segoe UI", Font.PLAIN, 20);
         Font valueFont = new Font("Segoe UI", Font.BOLD, 20);

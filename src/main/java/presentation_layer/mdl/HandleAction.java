@@ -183,7 +183,7 @@ public class HandleAction {
 
         btnConfirm.addActionListener(e -> {
             boolean successAll = true;
-            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "CONFIRMED");
+            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "CONFIRMED", null);
             if (!success) {
                 successAll = false;
                 JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + o.getOrderID());
@@ -531,7 +531,7 @@ public class HandleAction {
             boolean allSuccess = true;
             for (int i = 0; i < rowCount; i++) {
                 String orderID = (String) model.getValueAt(i, 0);
-                boolean success = orderRepo.updateOrderStatus(orderID, "CONFIRMED");
+                boolean success = orderRepo.updateOrderStatus(orderID, "CONFIRMED", null);
                 if (!success) {
                     allSuccess = false;
                     JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + orderID);
@@ -656,21 +656,22 @@ public class HandleAction {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnClose = new JButton("Close");
-        JButton btnConfirm = new JButton("Confirm");
+        JButton btnPick = new JButton("Pick");
+        JButton btnFinish = new JButton("Finish");
 
         btnClose.addActionListener(e -> {
             SwingUtilities.getWindowAncestor(detailPanel).dispose();
         });
 
-        btnConfirm.addActionListener(e -> {
+        btnPick.addActionListener(e -> {
             boolean successAll = true;
-            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), nStatus);
+            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), nStatus, id);
             if (!success) {
                 successAll = false;
-                JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + o.getOrderID());
+                JOptionPane.showMessageDialog(parent, "Failed to " + nStatus + " order: " + o.getOrderID());
             }
             if (successAll) {
-                JOptionPane.showMessageDialog(parent, "Order confirmed successfully!");
+                JOptionPane.showMessageDialog(parent, "Successfully!");
 
                 Window window = SwingUtilities.getWindowAncestor(detailPanel);
                 if (window != null) {
@@ -679,8 +680,28 @@ public class HandleAction {
             }
         });
 
-        if(o.getShippedDate()==null || o.getStatus().equals("PENDING")) {
-            buttonPanel.add(btnConfirm);
+        btnFinish.addActionListener(e -> {
+            boolean successAll = true;
+            boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), nStatus, id);
+            if (!success) {
+                successAll = false;
+                JOptionPane.showMessageDialog(parent, "Failed to " + nStatus + " order: " + o.getOrderID());
+            }
+            if (successAll) {
+                JOptionPane.showMessageDialog(parent, "Successfully!");
+
+                Window window = SwingUtilities.getWindowAncestor(detailPanel);
+                if (window != null) {
+                    window.dispose();
+                }
+            }
+        });
+
+        if(o.getStatus().equals("CONFIRMED")) {
+            buttonPanel.add(btnPick);
+        }
+        if (o.getStatus().equals("SHIPPING")) {
+            buttonPanel.add(btnFinish);
         }
         buttonPanel.add(btnClose);
 

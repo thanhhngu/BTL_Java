@@ -40,7 +40,7 @@ public class shipperFrame extends JFrame implements SidebarCallback {
     private OrdersPanel ordersPanel;
     private WorkPerPanel workPerPanel;
 
-    private AccountPanel accountPanel = new AccountPanel(id);
+    private AccountPanel accountPanel ;
 
     private HeaderPanel header;
 
@@ -57,6 +57,7 @@ public class shipperFrame extends JFrame implements SidebarCallback {
         ordersPanel = new OrdersPanel(id);
         freePickPanel = new FreePickPanel(id);
         workPerPanel = new WorkPerPanel(id);
+        accountPanel = new AccountPanel(id);
 
 
         header = new HeaderPanel(un, ordersPanel.getTable(), ordersPanel.getModel());

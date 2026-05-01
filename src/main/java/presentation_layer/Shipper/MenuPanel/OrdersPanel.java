@@ -41,6 +41,7 @@ public class OrdersPanel extends JPanel {
     }
 
     public void initTable(JPanel tablePanel) {
+        tablePanel.removeAll();
         OrderReponsitory orderRepo = new OrderReponsitory();
         List<order> orderList = orderRepo.getOrdersWithProductsForShipper("SHIPPING", id);
 
@@ -68,6 +69,9 @@ public class OrdersPanel extends JPanel {
                 o -> o.getOrderID(),
                 o -> showOrderDetailForShipper(o, table, model, this.id, this, "DELIVERED")
         );
+
+        tablePanel.revalidate();
+        tablePanel.repaint();
     }
 
     public void initControl(JPanel sidePanel, JPanel tablePanel) {
@@ -81,9 +85,7 @@ public class OrdersPanel extends JPanel {
 
 
         btnRefesh.addActionListener(e -> {
-            model.setRowCount(0);
             initTable(tablePanel);
-            table.repaint();
         });
     }
 

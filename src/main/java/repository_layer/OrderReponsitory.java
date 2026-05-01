@@ -174,14 +174,28 @@ public class OrderReponsitory {
         return new ArrayList<>(map.values());
     }
 
-    public boolean updateOrderStatus(String orderID, String newStatus) {
-        String sql = "UPDATE orders SET status = ? WHERE orderID = ?";
+    public boolean updateOrderStatus(String orderID, String newStatus, String shipperID) {
+        StringBuilder sql = new StringBuilder("UPDATE Orders SET status = ?");
+        List<Object> params = new ArrayList<>();
+        params.add(newStatus);
+
+        if (shipperID != null && !shipperID.trim().isEmpty()) {
+            sql.append(", shipperID = ?");
+            params.add(shipperID);
+        }
+        if ("DELIVERED".equalsIgnoreCase(newStatus)) {
+            sql.append(", shippedDate = NOW()");
+            // shippedDate không cần param, vì dùng hàm NOW()
+        }
+        sql.append(" WHERE orderID = ?");
+        params.add(orderID);
 
         try (Connection con = DBconnection.openConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
 
-            ps.setString(1, newStatus);
-            ps.setString(2, orderID);
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -191,6 +205,7 @@ public class OrderReponsitory {
             return false;
         }
     }
+
 
     public double getTotalAmount(String ShopID, LocalDate date){
         String sql = "SELECT o.*, p.*, od.quantity " +

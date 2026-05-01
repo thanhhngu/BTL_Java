@@ -89,4 +89,17 @@ public class account {
     public void setRoleID(String roleID) {
         this.roleID = roleID;
     }
+
+    @Override
+    public String toString() {
+        return "account{" +
+                "accountID='" + accountID + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", customerID='" + customerID + '\'' +
+                ", shopID='" + shopID + '\'' +
+                ", shipperID='" + shipperID + '\'' +
+                '}';
+    }
 }

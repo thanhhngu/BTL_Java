@@ -145,7 +145,7 @@ public class accountRepository {
     }
 
     public account getInfo(String roleID) {
-        String sql = "SELECT * FROM Account WHERE customerID = ? or shopID = ? or shipperID = ?";
+        String sql = "SELECT * FROM account WHERE customerID = ? or shopID = ? or shipperID = ?";
 
         try (Connection conn = DBconnection.openConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
