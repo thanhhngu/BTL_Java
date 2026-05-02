@@ -315,6 +315,7 @@ public class HandleAction {
         for (products p : productList) {
             model.addRow(new Object[]{
                     p.getProductID(),
+                    p.getCatgID(),
                     p.getName(),
                     p.getUnitPrice(),
                     p.getUnitInStock(),
@@ -423,8 +424,7 @@ public class HandleAction {
         JTextField txtName = new JTextField(name);
         JTextField txtUnitPrice = new JTextField(String.valueOf(unitPrice));
         JTextField txtUnitInStock = new JTextField(String.valueOf(unitInStock));
-        JComboBox<String> cbQuantity = new JComboBox<>(new String[]{"1 box", "1 dozen", "1 pack", "1 unit"});
-        cbQuantity.setSelectedItem(quantityPerUnit);
+        JTextField txtQuantity = new JTextField(quantityPerUnit);
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.add(new JLabel("Category ID:"));
@@ -436,7 +436,7 @@ public class HandleAction {
         panel.add(new JLabel("Unit In Stock:"));
         panel.add(txtUnitInStock);
         panel.add(new JLabel("Quantity Per Unit:"));
-        panel.add(cbQuantity);
+        panel.add(txtQuantity);
 
         int result = JOptionPane.showConfirmDialog(parent, panel, "Edit Product", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
@@ -444,7 +444,8 @@ public class HandleAction {
             repo.updateProduct(productID, txtName.getText(),
                     Double.parseDouble(txtUnitPrice.getText()),
                     Integer.parseInt(txtUnitInStock.getText()),
-                    (String) cbQuantity.getSelectedItem());
+                    txtQuantity.getText()
+            );
             JOptionPane.showMessageDialog(parent, "Product updated successfully!");
             refreshTable(model, shopId);
         }
@@ -488,12 +489,14 @@ public class HandleAction {
             JTable tbl = new JTable(mdl);
 
             JScrollPane scrollPane = new JScrollPane(tbl);
+            scrollPane.setPreferredSize(new Dimension(800, 350));
 
             int cf = JOptionPane.showConfirmDialog(
+                    parent,
                     scrollPane,
-                    "Preview Imported Products",
-                    "Confirm Import",
-                    JOptionPane.YES_NO_OPTION
+                    "Confirm import (" + importedProducts.size() + " products)",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
             );
 
             // insert

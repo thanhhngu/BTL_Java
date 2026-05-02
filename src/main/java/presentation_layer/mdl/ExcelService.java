@@ -27,9 +27,12 @@ public class ExcelService {
     private List<products> readExcel(File file, String shopID) {
         List<products> list = new ArrayList<>();
         DataFormatter formatter = new DataFormatter();
+        ProductRepository repo = new ProductRepository();
 
         try (FileInputStream fis = new FileInputStream(file);
              Workbook workbook = WorkbookFactory.create(fis)) {
+
+            String currentID = repo.generateNextProductID();
 
             Sheet sheet = workbook.getSheetAt(0);
 
@@ -50,9 +53,10 @@ public class ExcelService {
                 if (row == null) continue;
 
                 products p = new products();
-                ProductRepository repo = new ProductRepository();
 
-                p.setProductID(repo.generateNextProductID());
+                p.setProductID(currentID);
+                currentID = incrementProductID(currentID);
+
                 p.setCatgID(formatter.formatCellValue(row.getCell(1)));
                 p.setName(formatter.formatCellValue(row.getCell(2)));
                 p.setShopID(shopID);
@@ -69,5 +73,19 @@ public class ExcelService {
             e.printStackTrace();
         }
         return list;
+    }
+
+    private String incrementProductID(String currentID) {
+        if (currentID == null || currentID.isEmpty()) return currentID;
+
+        String prefix = currentID.substring(0, 1); // "P"
+        String numberPart = currentID.substring(1); // "000"
+
+        int length = numberPart.length();
+        int num = Integer.parseInt(numberPart);
+        num++;
+
+        String format = "%s%0" + length + "d";
+        return String.format(format, prefix, num);
     }
 }
