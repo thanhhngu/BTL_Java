@@ -124,12 +124,63 @@ public class HandleAction {
     //show for dbclick
 
     public static JPanel showImageProduct(products p, Component parent) {
+        JPanel mainPanel = new JPanel(new BorderLayout(20, 10)); // Khoảng cách giữa ảnh và chữ là 20px
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Căn lề ngoài
         String imgPath = new ProductRepository().getImagePath(p.getProductID());
-        if (imgPath == null) {
-            JOptionPane.showMessageDialog(parent, "Failed to load image for product: " + p.getName());
-            return null;
+        if (imgPath != null) {
+            JPanel imgPanel = showImg(imgPath);
+            if (imgPanel != null) {
+                mainPanel.add(imgPanel, BorderLayout.WEST);
+            }
+        } else {
+            // Nếu không có ảnh, hiển thị một ô xám thay thế
+            JLabel lblNoImage = new JLabel("Không có ảnh", SwingConstants.CENTER);
+            lblNoImage.setPreferredSize(new Dimension(200, 200)); // Kích thước ảnh mặc định
+            lblNoImage.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            mainPanel.add(lblNoImage, BorderLayout.WEST);
         }
-        return showImg(imgPath);
+
+        JPanel infoPanel = new JPanel(new GridLayout(0, 2, 10, 15));
+
+        Font labelFont = new Font("Arial", Font.BOLD, 14);
+        Font valueFont = new Font("Arial", Font.PLAIN, 14);
+
+        String[][] productDetails = {
+                {"Mã sản phẩm:", p.getProductID()},
+                {"Tên sản phẩm:", p.getName()},
+                {"Danh mục (CatID):", p.getCatgID()},
+                {"Đơn giá:", String.format("%,.0f VND", p.getUnitPrice())}, // Format tiền tệ đẹp
+                {"Tồn kho:", String.valueOf(p.getUnitInStock())},
+                {"Quy cách tính:", p.getQuantityPerUnit()}
+                // Nếu có trường Discontinued thì bạn có thể mở dòng dưới:
+                // {"Trạng thái:", p.isDiscontinued() ? "Ngừng bán" : "Đang bán"}
+        };
+
+        for (String[] detail : productDetails) {
+            JLabel lblTitle = new JLabel(detail[0]);
+            lblTitle.setFont(labelFont);
+            lblTitle.setForeground(Color.DARK_GRAY);
+
+            JLabel lblValue = new JLabel(detail[1]);
+            lblValue.setFont(valueFont);
+
+            if (detail[0].equals("Tồn kho:")) {
+                if (p.getUnitInStock() < 10) {
+                    lblValue.setForeground(Color.RED); // Báo đỏ nếu tồn kho thấp
+                    lblValue.setFont(new Font("Arial", Font.BOLD, 14));
+                } else {
+                    lblValue.setForeground(new Color(0, 153, 76)); // Màu xanh lục
+                }
+            }
+
+            infoPanel.add(lblTitle);
+            infoPanel.add(lblValue);
+        }
+
+        // Thêm infoPanel vào phần giữa của mainPanel
+        mainPanel.add(infoPanel, BorderLayout.CENTER);
+
+        return mainPanel;
     }
 
     public static JPanel showOrderDetail(order o, JTable table, DefaultTableModel model, String shopId, Component parent) {
@@ -183,19 +234,22 @@ public class HandleAction {
 
         btnConfirm.addActionListener(e -> {
             boolean successAll = true;
+            // biet het p nao
+            for (order_detail item : o.getItems()) {
+                boolean success2 = new ProductRepository().updateProductUnitInStock(o.getOrderID());
+                if (!success2) {
+                    successAll = false;
+                    JOptionPane.showMessageDialog(parent, "Failed to update stock for product: " + item.getProduct().getName());
+                }
+                if (!successAll) {
+                    return;
+                }
+            }
             boolean success = new OrderReponsitory().updateOrderStatus(o.getOrderID(), "CONFIRMED", null);
             if (!success) {
                 successAll = false;
                 JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + o.getOrderID());
             }
-            for (order_detail item : o.getItems()) {
-                boolean success2 = new ProductRepository().updateProductUnitInStock(item.getProduct().getProductID());
-                if (!success2) {
-                    successAll = false;
-                    JOptionPane.showMessageDialog(parent, "Failed to update stock for product: " + item.getProduct().getName());
-                }
-            }
-
             if (successAll) {
                 JOptionPane.showMessageDialog(parent, "Order confirmed successfully!");
                 // refresh table
@@ -341,9 +395,11 @@ public class HandleAction {
         txtShopID.setEditable(false);
 
         // quantityPerUnit là combobox
-        JComboBox<String> cbQuantity = new JComboBox<>(new String[]{
-                "1 box", "1 dozen", "1 pack", "1 unit"
-        });
+//        JComboBox<String> cbQuantity = new JComboBox<>(new String[]{
+//                "1 box", "1 dozen", "1 pack", "1 unit"
+//        });
+//
+        JTextField txtQtyPU = new JTextField();
 
         JCheckBox chkDiscontinued = new JCheckBox("Discontinued");
         JTextField txtImagePath = new JTextField();
@@ -360,7 +416,7 @@ public class HandleAction {
         dialog.add(new JLabel("Unit In Stock:"));
         dialog.add(txtUnitInStock);
         dialog.add(new JLabel("Quantity Per Unit:"));
-        dialog.add(cbQuantity);
+        dialog.add(txtQtyPU);
         dialog.add(new JLabel("Discontinued:"));
         dialog.add(chkDiscontinued);
         dialog.add(new JLabel("Image Path:"));
@@ -377,7 +433,7 @@ public class HandleAction {
             String name = txtName.getText();
             double unitPrice = Double.parseDouble(txtUnitPrice.getText());
             int unitInStock = Integer.parseInt(txtUnitInStock.getText());
-            String quantityPerUnit = (String) cbQuantity.getSelectedItem();
+            String quantityPerUnit = txtQtyPU.getText();
             boolean discontinued = chkDiscontinued.isSelected();
             String imagePath = txtImagePath.getText();
 
@@ -387,6 +443,8 @@ public class HandleAction {
             boolean success = new ProductRepository().insertProduct(newProduct);
             if (success) {
                 JOptionPane.showMessageDialog(dialog, "Product added successfully!");
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Failed to add product. Please try again.(Or error CategoryID)");
             }
 
             dialog.dispose();
@@ -531,19 +589,21 @@ public class HandleAction {
         int confirm = JOptionPane.showConfirmDialog(parent, "Are you sure you want to confirm all orders?", "Confirm All", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             OrderReponsitory orderRepo = new OrderReponsitory();
+            ProductRepository productRepo = new ProductRepository();
             boolean allSuccess = true;
             for (int i = 0; i < rowCount; i++) {
                 String orderID = (String) model.getValueAt(i, 0);
+                boolean success2 = productRepo.updateProductUnitInStock(orderID);
+                if (!success2) {
+                    JOptionPane.showMessageDialog(parent, "Failed to update stock for order: " + orderID);
+                    return;
+                }
                 boolean success = orderRepo.updateOrderStatus(orderID, "CONFIRMED", null);
                 if (!success) {
                     allSuccess = false;
                     JOptionPane.showMessageDialog(parent, "Failed to confirm order: " + orderID);
+                    break;
                 }
-            }
-            boolean success2 = new ProductRepository().updateProductUnitInStock(null);
-            if (!success2) {
-                allSuccess = false;
-                JOptionPane.showMessageDialog(parent, "Failed to update product stock after confirming orders!");
             }
             if (allSuccess) {
                 JOptionPane.showMessageDialog(parent, "All orders confirmed successfully!");
