@@ -46,7 +46,7 @@ public class HomePanel extends JPanel {
         ProductRepository productRepo = new ProductRepository();
         List<products> productList = productRepo.findByShopID(id);
 
-        String[] columnNames = {"Product ID", "CatagoryID", "Name", "Unit Price", "Unit In Stock", "Quantity Per Unit"};
+        String[] columnNames = {"Mã SP", "Mã danh mục", "Tên", "Đơn giá", "Tồn kho", "Quy cách"};
 
         Object[][] data = new Object[productList.size()][6];
 
@@ -75,10 +75,10 @@ public class HomePanel extends JPanel {
     }
 
     public void initControl(JPanel sidePanel) {
-        JButton btnAdd = new JButton("Add Product");
-        JButton btnEdit = new JButton("Edit Product");
-        JButton btnRemove = new JButton("Delete Product");
-        JButton btnImEx = new JButton("Import");
+        JButton btnAdd = new JButton("Thêm sản phẩm");
+        JButton btnEdit = new JButton("Sửa sản phẩm");
+        JButton btnRemove = new JButton("Xóa sản phẩm");
+        JButton btnImEx = new JButton("Nhập");
 
 
         JPanel controlPanel = new JPanel(new GridLayout(4, 1, 10, 10));

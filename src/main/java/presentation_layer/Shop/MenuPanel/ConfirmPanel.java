@@ -44,7 +44,7 @@ public class ConfirmPanel extends JPanel {
         List<order> orderList = orderRepo.getOrdersWithProducts("PENDING", id);
         System.out.println(orderList.size());
 
-        String[] columnNames = {"orderID", "customerID", "shipperID", "orderDate"};
+        String[] columnNames = {"Mã đơn", "Mã khách hàng", "Mã shipper", "Ngày đặt"};
 
         Object[][] data = new Object[orderList.size()][5];
 
@@ -69,7 +69,7 @@ public class ConfirmPanel extends JPanel {
     }
 
     public void initControl(JPanel sidePanel) {
-        JButton btnCAll = new JButton("Confirm All");
+        JButton btnCAll = new JButton("Xác nhận tất cả");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
 

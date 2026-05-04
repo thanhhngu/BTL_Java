@@ -44,7 +44,7 @@ public class FreePickPanel extends JPanel {
         OrderReponsitory orderRepo = new OrderReponsitory();
         List<order> orderList = orderRepo.getOrdersWithProductsForShipper("CONFIRMED", null);
 
-        String[] columnNames = {"orderID", "CustomerID", "shipperID", "orderDate", "AddressID"};
+        String[] columnNames = {"Mã đơn", "Mã khách hàng", "Mã shipper", "Ngày đặt", "Mã địa chỉ"};
 
         Object[][] data = new Object[orderList.size()][5];
 
@@ -73,7 +73,7 @@ public class FreePickPanel extends JPanel {
     }
 
     public void initControl(JPanel sidePanel, JPanel tablePanel) {
-        JButton btnRefesh = new JButton("Refresh");
+        JButton btnRefesh = new JButton("Làm mới");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
 

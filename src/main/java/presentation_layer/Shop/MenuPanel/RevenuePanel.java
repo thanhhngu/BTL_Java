@@ -48,7 +48,7 @@ public class RevenuePanel extends JPanel {
         headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
         headerPanel.setBackground(Color.WHITE);
 
-        JLabel lblTotal = new JLabel("Total Revenue:");
+        JLabel lblTotal = new JLabel("Tổng doanh thu:");
         Double totalRevenue = new OrderReponsitory().getTotalAmount(this.id, null);
         JLabel lblRevenueValue = new JLabel(String.format("$%,.2f", totalRevenue));
 
@@ -71,7 +71,7 @@ public class RevenuePanel extends JPanel {
         table = new StyledTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Monthly Revenue Details"));
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Chi tiết doanh thu theo tháng"));
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -108,8 +108,8 @@ public class RevenuePanel extends JPanel {
     }
 
     public void initControl(JPanel sidePanel, JPanel mainPanel) {
-        JButton btnQtySold = new JButton("Quantity Sold");
-        JButton btnReneuve = new JButton("Revenue");
+        JButton btnQtySold = new JButton("Số lượng đã bán");
+        JButton btnReneuve = new JButton("Doanh thu");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
 

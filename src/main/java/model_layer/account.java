@@ -12,6 +12,10 @@ public class account {
 
     private String roleID;
 
+    private shop shop;
+    private customer customer;
+    private shipper shipper;
+
     public account() {
     }
 
@@ -101,5 +105,29 @@ public class account {
                 ", shopID='" + shopID + '\'' +
                 ", shipperID='" + shipperID + '\'' +
                 '}';
+    }
+
+    public shop getShop() {
+        return shop;
+    }
+
+    public void setShop(shop shop) {
+        this.shop = shop;
+    }
+
+    public customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(customer customer) {
+        this.customer = customer;
+    }
+
+    public shipper getShipper() {
+        return shipper;
+    }
+
+    public void setShipper(shipper shipper) {
+        this.shipper = shipper;
     }
 }

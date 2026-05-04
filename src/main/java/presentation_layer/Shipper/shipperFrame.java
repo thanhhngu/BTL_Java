@@ -51,7 +51,7 @@ public class shipperFrame extends JFrame implements SidebarCallback {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        sb = new SideBarr(new String[]{"Orders", "FreePick", "WorkPerformance", "Account"}, this);
+        sb = new SideBarr(new String[]{"Đơn hàng", "Lấy hàng", "Hiệu suất", "Tài khoản"}, this);
         mainPanel.add(sb, BorderLayout.WEST);
 
         ordersPanel = new OrdersPanel(id);
@@ -75,19 +75,19 @@ public class shipperFrame extends JFrame implements SidebarCallback {
         content.removeAll();
 
         switch (cmd) {
-            case "Orders":
+            case "Đơn hàng":
                 content.add(ordersPanel, BorderLayout.CENTER);
                 header.setTarget(ordersPanel.getTable(), ordersPanel.getModel());
                 break;
-            case "FreePick":
+            case "Lấy hàng":
                 content.add(freePickPanel, BorderLayout.CENTER);
                 header.setTarget(freePickPanel.getTable(), freePickPanel.getModel());
                 break;
-            case "WorkPerformance":
+            case "Hiệu suất":
                 content.add(workPerPanel, BorderLayout.CENTER);
                 header.setTarget(workPerPanel.getTable(), workPerPanel.getModel());
                 break;
-            case "Account":
+            case "Tài khoản":
                 content.add(accountPanel, BorderLayout.CENTER);
                 break;
         }

@@ -43,7 +43,7 @@ public class StatusPanel extends JPanel {
         OrderReponsitory orderRepo = new OrderReponsitory();
         List<order> orderList = orderRepo.getOrdersWithProducts("DELIVERED", id);
 
-        String[] columnNames = {"orderID", "customerID", "shipperID", "orderDate", "shippedDate"};
+        String[] columnNames = {"Mã đơn", "Mã khách hàng", "Mã shipper", "Ngày đặt", "Ngày giao"};
 
         Object[][] data = new Object[orderList.size()][5];
 
@@ -70,9 +70,9 @@ public class StatusPanel extends JPanel {
     }
 
     public void initControl(JPanel sidePanel) {
-        JButton btnDelivered = new JButton("Show Delivered");
-        JButton btnShipping = new JButton("Show Shipping");
-        JButton btnConfirmed = new JButton("Show Confirmed");
+        JButton btnDelivered = new JButton("Hiển thị Đã giao");
+        JButton btnShipping = new JButton("Hiển thị Đang giao");
+        JButton btnConfirmed = new JButton("Hiển thị Đã xác nhận");
 
         JPanel controlPanel = new JPanel(new GridLayout(3, 1, 10, 10));
         controlPanel.add(btnDelivered);

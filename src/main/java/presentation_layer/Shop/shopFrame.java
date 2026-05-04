@@ -31,7 +31,7 @@ public class shopFrame extends JFrame implements SidebarCallback {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Sidebar
-        sb = new SideBarr(new String[]{"Home", "Confirm", "Status", "Revenue", "Account"}, this);
+        sb = new SideBarr(new String[]{"Trang chủ", "Xác nhận", "Trạng thái", "Doanh thu", "Tài khoản"}, this);
         mainPanel.add(sb, BorderLayout.WEST);
 
         homePanel = new HomePanel(id);
@@ -58,23 +58,23 @@ public class shopFrame extends JFrame implements SidebarCallback {
         content.removeAll();
 
         switch (cmd) {
-            case "Home":
+            case "Trang chủ":
                 content.add(homePanel, BorderLayout.CENTER);
                 header.setTarget(homePanel.getTable(), homePanel.getModel());
                 break;
-            case "Confirm":
+            case "Xác nhận":
                 content.add(confirmPanel, BorderLayout.CENTER);
                 header.setTarget(confirmPanel.getTable(), confirmPanel.getModel());
                 break;
-            case "Status":
+            case "Trạng thái":
                 content.add(statusPanel, BorderLayout.CENTER);
                 header.setTarget(statusPanel.getTable(), statusPanel.getModel());
                 break;
-            case "Revenue":
+            case "Doanh thu":
                 content.add(revenuePanel, BorderLayout.CENTER);
                 header.setTarget(revenuePanel.getTable(), revenuePanel.getModel());
                 break;
-            case "Account":
+            case "Tài khoản":
                 content.add(accountPanel, BorderLayout.CENTER);
                 header.setTarget(null, null);
                 break;
